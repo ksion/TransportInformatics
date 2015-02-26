@@ -107,6 +107,7 @@ public class DisplayLocationActivity extends ActionBarActivity
             mResolvingError = true;
         }
     }
+
     private void showErrorDialog(int errorCode) {
         // Create a fragment for the error dialog
         ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
@@ -136,7 +137,8 @@ public class DisplayLocationActivity extends ActionBarActivity
     }
 
     public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() { }
+        public ErrorDialogFragment() {
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -148,7 +150,7 @@ public class DisplayLocationActivity extends ActionBarActivity
 
         @Override
         public void onDismiss(DialogInterface dialog) {
-            ((MainActivity)getActivity()).onDialogDismissed();
+            ((MainActivity) getActivity()).onDialogDismissed();
         }
     }
 }
