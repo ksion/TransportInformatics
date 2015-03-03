@@ -66,7 +66,15 @@ public class DisplayLocationActivity extends ActionBarActivity
 
             latitude.setText(String.valueOf(location.getLatitude()));
             longitude.setText(String.valueOf(location.getLongitude()));
+
+            startLocationDisplay(location);
         }
+    }
+
+    private void startLocationDisplay(Location l) {
+        Intent intent = new Intent(this, FourSquareActivity.class);
+        intent.putExtra("LOCATION", l);
+        startActivity(intent);
     }
 
     @Override
@@ -90,10 +98,7 @@ public class DisplayLocationActivity extends ActionBarActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        if (mResolvingError) {
-            // Already attempting to resolve an error.
-            return;
-        } else if (result.hasResolution()) {
+        if (!mResolvingError && result.hasResolution()) {
             try {
                 mResolvingError = true;
                 result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
@@ -116,10 +121,6 @@ public class DisplayLocationActivity extends ActionBarActivity
         args.putInt(DIALOG_ERROR, errorCode);
         dialogFragment.setArguments(args);
         dialogFragment.show(this.getFragmentManager(), "errordialog");
-    }
-
-    public void onDialogDismissed() {
-        mResolvingError = false;
     }
 
     @Override

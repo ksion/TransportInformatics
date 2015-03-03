@@ -7,5 +7,7 @@
     <string name="latitude">latitude!</string>
     <string name="longitude">longitude!</string>
     <string name="title_activity_display_location">Location</string>
+    <string name="title_activity_four_square">FourSquareActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
