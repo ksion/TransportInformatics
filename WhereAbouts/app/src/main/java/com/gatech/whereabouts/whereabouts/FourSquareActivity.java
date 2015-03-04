@@ -1,14 +1,14 @@
 package com.gatech.whereabouts.whereabouts;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -23,29 +23,29 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 
 
-public class FourSquareActivity extends ActionBarActivity {
+public class FourSquareActivity extends ListActivity {
 
     Location location;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+
         try {
             location = intent.getParcelableExtra("LOCATION");
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             System.out.println("Could not parse !");
         }
 
         String uri = buildStringURI(location);
+
         AsyncTask<String, Void, JSONObject> taskResponse = new RequestTask().execute(uri);
+
         JSONObject response = null;
         try {
             response = taskResponse.get();
@@ -56,146 +56,26 @@ public class FourSquareActivity extends ActionBarActivity {
             throw new RuntimeException(e.getMessage());
         }
 
-        List<Location> locations = readStream(response);
+        ListView listView = (ListView) findViewById(R.id.listView);
+        FourSquareResponse locations = readStream(response);
+
+
+
 
     }
 
-    private List<Location> readStream(JSONObject in) {
-
-        return new List<Location>() {
-            @Override
-            public void add(int location, Location object) {
-
-            }
-
-            @Override
-            public boolean add(Location object) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(int location, Collection<? extends Location> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends Location> collection) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public boolean contains(Object object) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public Location get(int location) {
-                return null;
-            }
-
-            @Override
-            public int indexOf(Object object) {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @NonNull
-            @Override
-            public Iterator<Location> iterator() {
-                return null;
-            }
-
-            @Override
-            public int lastIndexOf(Object object) {
-                return 0;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<Location> listIterator() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<Location> listIterator(int location) {
-                return null;
-            }
-
-            @Override
-            public Location remove(int location) {
-                return null;
-            }
-
-            @Override
-            public boolean remove(Object object) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public Location set(int location, Location object) {
-                return null;
-            }
-
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @NonNull
-            @Override
-            public List<Location> subList(int start, int end) {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @NonNull
-            @Override
-            public <T> T[] toArray(T[] array) {
-                return null;
-            }
-        };
+    private FourSquareResponse readStream(JSONObject in) {
+        FourSquareJSONParser parser = new FourSquareJSONParser();
+        return parser.parse(in);
     }
 
     private String buildStringURI(Location l) {
-        StringBuilder s = new StringBuilder();
-        s.append("https://api.foursquare.com/v2/venues/search?");
-        s.append("ll=").append(l.getLatitude()).append(",").append(l.getLongitude()).append("&");
-        s.append("client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&");
-        s.append("client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&");
-        s.append("v=20150214");
-        return s.toString();
+        return "https://api.foursquare.com/v2/venues/search?" +
+                "ll=" + l.getLatitude() + "," + l.getLongitude() + "&" +
+                "client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&" +
+                "client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&" +
+                "v=20150214";
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -229,7 +109,7 @@ public class FourSquareActivity extends ActionBarActivity {
             try {
                 response = httpclient.execute(new HttpGet(uri[0]));
                 StatusLine statusLine = response.getStatusLine();
-                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                     BufferedReader rd = new BufferedReader(new
                             InputStreamReader(response.getEntity().getContent()));
                     StringBuilder result = new StringBuilder();
@@ -243,7 +123,7 @@ public class FourSquareActivity extends ActionBarActivity {
                         throw new RuntimeException(e.getMessage());
                     }
                     return o;
-                } else{
+                } else {
                     //Closes the connection.
                     response.getEntity().getContent().close();
                     throw new IOException(statusLine.getReasonPhrase());
