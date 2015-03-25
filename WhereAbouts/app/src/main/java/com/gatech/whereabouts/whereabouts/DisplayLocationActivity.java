@@ -9,6 +9,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,6 +21,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+
+import java.util.ArrayList;
 
 
 public class DisplayLocationActivity extends ActionBarActivity
@@ -57,15 +63,47 @@ public class DisplayLocationActivity extends ActionBarActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        location = LocationServices.FusedLocationApi.getLastLocation(
-                client);
+        location = LocationServices.FusedLocationApi.getLastLocation(client);
+
         if (location != null) {
             setContentView(R.layout.activity_display_location);
+
             TextView latitude = (TextView) findViewById(R.id.latitude);
             TextView longitude = (TextView) findViewById(R.id.longitude);
 
             latitude.setText(String.valueOf(location.getLatitude()));
             longitude.setText(String.valueOf(location.getLongitude()));
+
+            FourSquareAsycCaller client = new FourSquareAsycCaller(location);
+            final FourSquareResponse locations = client.execute();
+
+            Spinner realLocation = (Spinner) findViewById(R.id.locationreal);
+            ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    locations.getVenueNames());
+            realLocation.setAdapter(locationAdapter);
+            realLocation.setSelection(0);
+            realLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Spinner categorySelect = (Spinner) findViewById(R.id.tpcategoryselect);
+
+                    ArrayList<FourSquareVenue> venues = locations.getVenues();
+                    ArrayList<String> categories = venues.get(position).getVenueCategories();
+                    ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<>(
+                            parent.getContext(),
+                            android.R.layout.simple_spinner_item,
+                            categories);
+                    categorySelect.setAdapter(categoriesAdapter);
+                    categorySelect.setSelection(0);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    //mao
+                }
+            });
         }
     }
 
@@ -90,10 +128,7 @@ public class DisplayLocationActivity extends ActionBarActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        if (mResolvingError) {
-            // Already attempting to resolve an error.
-            return;
-        } else if (result.hasResolution()) {
+        if (!mResolvingError && result.hasResolution()) {
             try {
                 mResolvingError = true;
                 result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
@@ -116,10 +151,6 @@ public class DisplayLocationActivity extends ActionBarActivity
         args.putInt(DIALOG_ERROR, errorCode);
         dialogFragment.setArguments(args);
         dialogFragment.show(this.getFragmentManager(), "errordialog");
-    }
-
-    public void onDialogDismissed() {
-        mResolvingError = false;
     }
 
     @Override

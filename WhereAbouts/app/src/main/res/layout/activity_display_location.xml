@@ -1,123 +1,127 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:paddingTop="80dp"
-    android:paddingLeft="40dp"
+    android:id="@+id/list_item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:columnCount="2"
-    android:rowCount="6"
-    android:id="@+id/list_item">
+    android:orientation="vertical"
+    android:paddingLeft="40dp"
+    android:paddingTop="80dp"
+    android:rowCount="6">
 
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude"
         android:id="@+id/LA"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:gravity="left"
-        android:textStyle="bold"
-        />
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lacoordinates"
-        android:id="@+id/latitude"
+        android:layout_column="0"
         android:layout_row="0"
-        android:layout_column="1"
-        android:paddingLeft="10dp"
-     />
+        android:gravity="left"
+        android:text="@string/latitude"
+        android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/latitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:paddingLeft="10dp"
+        android:text="@string/lacoordinates" />
+
+    <TextView
+        android:id="@+id/LO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_row="1"
+        android:gravity="left"
         android:paddingTop="10dp"
         android:text="@string/longitude"
-        android:id="@+id/LO"
-        android:layout_row="1"
-        android:layout_column="0"
-        android:gravity="left"
-        android:textStyle="bold"
-        />
+        android:textStyle="bold" />
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="@string/locoordinates"
         android:id="@+id/longitude"
-        android:layout_row="1"
-        android:layout_column="1"
-        android:paddingLeft="10dp"
-     />
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/locoordinates" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_row="2"
         android:paddingTop="10dp"
         android:text="@string/location"
-        android:id="@+id/location"
-        android:layout_row="2"
-        android:layout_column="0"
         android:textStyle="bold"
 
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="@string/locationreal"
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:paddingTop="10dp"-->
+    <!--android:text="@string/locationreal"-->
+    <!--android:id="@+id/locationreal"-->
+    <!--android:layout_row="2"-->
+    <!--android:layout_column="1"-->
+    <!--android:paddingLeft="10dp"-->
+    <!--/>-->
+    <Spinner
         android:id="@+id/locationreal"
-        android:layout_row="2"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
         android:layout_column="1"
+        android:layout_row="2"
         android:paddingLeft="10dp"
-        />
+        android:paddingTop="10dp" />
     <TextView
+        android:id="@+id/tpcategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_row="3"
         android:paddingTop="10dp"
         android:text="@string/tpcategory"
-        android:id="@+id/tpcategory"
-        android:layout_row="3"
-        android:layout_column="0"
-        android:textStyle="bold"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="@string/tpcategoryselect"
+        android:textStyle="bold" />
+    <Spinner
         android:id="@+id/tpcategoryselect"
-        android:layout_row="3"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
         android:layout_column="1"
+        android:layout_row="3"
         android:paddingLeft="10dp"
-        />
+        android:paddingTop="10dp" />
+
     <TextView
+        android:id="@+id/tp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_row="4"
         android:paddingTop="10dp"
         android:text="@string/tp"
-        android:id="@+id/tp"
-        android:layout_row="4"
-        android:layout_column="0"
-        android:textStyle="bold"
-        />
+        android:textStyle="bold" />
+
     <TextView
+        android:id="@+id/tpselect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="@string/tpselect"
-        android:id="@+id/tpselect"
-        android:layout_row="4"
         android:layout_column="1"
+        android:layout_row="4"
         android:paddingLeft="10dp"
-        />
+        android:paddingTop="10dp"
+        android:text="@string/tpselect" />
 
     <Button
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CONFIRM"
-        android:id="@+id/button2"
+        android:layout_column="0"
         android:layout_row="5"
-        android:layout_column="0" />
+        android:text="CONFIRM" />
 </GridLayout>
