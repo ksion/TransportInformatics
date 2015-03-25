@@ -3,11 +3,18 @@
 
     <string name="app_name">WhereAbouts</string>
     <string name="action_settings">Settings</string>
-    <string name="button_send">Send</string>
-    <string name="latitude">latitude!</string>
-    <string name="longitude">longitude!</string>
+    <string name="button_send">TRY</string>
+    <string name="latitude">LATITUDE</string>
+    <string name="longitude">LONGITUDE</string>
     <string name="title_activity_display_location">Location</string>
-    <string name="title_activity_four_square">FourSquareActivity</string>
-    <string name="hello_world">Hello world!</string>
 
+    <string name="send_hint">Press "TRY" to try out WhereAbouts! </string>
+    <string name="lacoordinates">updated latitude coordinates</string>
+    <string name="locoordinates">updated longitude coordinates</string>
+    <string name="location">You are at</string>
+    <string name="locationreal">updated location</string>
+    <string name="tpcategory">Trip Purpose Category</string>
+    <string name="tpcategoryselect">List of Categories</string>
+    <string name="tp">Trip Purpose</string>
+    <string name="tpselect">List of Purposes</string>
 </resources>
