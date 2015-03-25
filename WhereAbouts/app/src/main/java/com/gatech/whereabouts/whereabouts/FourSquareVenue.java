@@ -1,5 +1,6 @@
 package com.gatech.whereabouts.whereabouts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,14 @@ public class FourSquareVenue {
         this.name = name;
         this.location = location;
         this.categories = categories;
+    }
+
+    public ArrayList<String> getVenueCategories() {
+        ArrayList<String> items = new ArrayList<>();
+        for (FourSquareCategory c : categories) {
+            items.add(c.name);
+        }
+        return items;
     }
 }
 

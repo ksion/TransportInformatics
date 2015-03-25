@@ -1,14 +1,8 @@
 package com.gatech.whereabouts.whereabouts;
 
-import android.app.ListActivity;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -25,25 +19,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Created by ksion on 3/25/15.
+ */
+public class FourSquareAsycCaller {
 
-public class FourSquareActivity extends ListActivity {
-
+    String uri;
     Location location;
+    public FourSquareAsycCaller(Location l) {
+        location = l;
+        uri = buildStringURI(location);
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private String buildStringURI(Location l) {
+        return "https://api.foursquare.com/v2/venues/search?" +
+                "ll=" + l.getLatitude() + "," + l.getLongitude() + "&" +
+                "client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&" +
+                "client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&" +
+                "v=20150214";
+    }
 
-        Intent intent = getIntent();
-
-        try {
-            location = intent.getParcelableExtra("LOCATION");
-        } catch (NumberFormatException nfe) {
-            System.out.println("Could not parse !");
-        }
-
-        String uri = buildStringURI(location);
-
+    public FourSquareResponse execute() {
         AsyncTask<String, Void, JSONObject> taskResponse = new RequestTask().execute(uri);
 
         JSONObject response = null;
@@ -56,47 +52,12 @@ public class FourSquareActivity extends ListActivity {
             throw new RuntimeException(e.getMessage());
         }
 
-        ListView listView = (ListView) findViewById(R.id.listView);
-        FourSquareResponse locations = readStream(response);
-
-
-
-
+        return readStream(response);
     }
 
     private FourSquareResponse readStream(JSONObject in) {
         FourSquareJSONParser parser = new FourSquareJSONParser();
         return parser.parse(in);
-    }
-
-    private String buildStringURI(Location l) {
-        return "https://api.foursquare.com/v2/venues/search?" +
-                "ll=" + l.getLatitude() + "," + l.getLongitude() + "&" +
-                "client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&" +
-                "client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&" +
-                "v=20150214";
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_four_square, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     class RequestTask extends AsyncTask<String, Void, JSONObject> {
@@ -143,6 +104,4 @@ public class FourSquareActivity extends ListActivity {
             Log.i("readStream", "i think it worked?! Place breakpoint here.");
         }
     }
-
-
 }

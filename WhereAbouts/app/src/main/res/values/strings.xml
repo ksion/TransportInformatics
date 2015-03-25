@@ -9,11 +9,11 @@
     <string name="title_activity_display_location">Location</string>
 
     <string name="send_hint">Press "TRY" to try out WhereAbouts! </string>
-    <string name="lacoordinates">updated latitude coordinates</string>
-    <string name="locoordinates">updated longitude coordinates</string>
+    <string name="lacoordinates">latitude coordinate</string>
+    <string name="locoordinates">longitude coordinate</string>
     <string name="location">You are at</string>
     <string name="locationreal">updated location</string>
-    <string name="tpcategory">Trip Purpose Category</string>
+    <string name="tpcategory">Trip Category</string>
     <string name="tpcategoryselect">List of Categories</string>
     <string name="tp">Trip Purpose</string>
     <string name="tpselect">List of Purposes</string>

@@ -1,23 +1,32 @@
 package com.gatech.whereabouts.whereabouts;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by ksion on 3/3/15.
  */
 public class FourSquareResponse {
-    private List<FourSquareVenue> venues;
+    private ArrayList<FourSquareVenue> venues;
 
     public FourSquareResponse() {
-        venues = new LinkedList<>();
+        venues = new ArrayList<>();
     }
 
     public void addVenue(FourSquareVenue fourSquareVenue) {
         venues.add(fourSquareVenue);
     }
 
-    public List<FourSquareVenue> getVenues() {
+    public ArrayList<FourSquareVenue> getVenues() {
         return venues;
     }
+
+    public ArrayList<String> getVenueNames() {
+        ArrayList<String> venueNames = new ArrayList<>();
+        for (FourSquareVenue v : venues) {
+            venueNames.add(v.name);
+        }
+        return venueNames;
+    }
+
+
  }

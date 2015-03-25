@@ -27,10 +27,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gatech.whereabouts.whereabouts.MainActivity" />
         </activity>
-        <activity
-            android:name=".FourSquareActivity"
-            android:label="@string/title_activity_four_square" >
-        </activity>
     </application>
 
 </manifest>
