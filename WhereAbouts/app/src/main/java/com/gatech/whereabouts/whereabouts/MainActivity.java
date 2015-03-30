@@ -6,15 +6,33 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    DatabaseHandler dbHandler;
+    TextView textView;
+    List<UserData> uds = new ArrayList<UserData>();
+    ListView dataListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHandler = new DatabaseHandler(getApplicationContext());
+        textView = (TextView) findViewById(R.id.textView);
+        dataListView = (ListView) findViewById(R.id.listView);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,12 +56,39 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onDialogDismissed() {
+
+    }
+
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayLocationActivity.class);
         startActivity(intent);
     }
 
-    public void onDialogDismissed() {
-
+    public void dbTest(View view) {
+        UserData ud = new UserData(1, "Time", "Location","Purpose");
+        dbHandler.createData(ud);
+        uds.add(ud);
+        //Toast.makeText(getApplicationContext(), "Data has been added to your Contacts!", Toast.LENGTH_SHORT).show();
+        textView.setText("Number of data "+dbHandler.getDataCount());
     }
+
+    public void clear(View view) {
+        dbHandler.deleteAll();
+        uds.clear();
+        textView.setText("Number of data "+dbHandler.getDataCount());
+    }
+
+    public void listing(View view) {
+        ListAdapter adapt = new ArrayAdapter<UserData>(this, android.R.layout.simple_list_item_1, uds);
+        dataListView.setAdapter(adapt);
+    }
+
+  /* private void populateList() {
+        ArrayAdapter<UserData> adapter = new DataListAdapter();
+        dataListView.setAdapter(adapter);
+    }*/
+
+
+
 }
