@@ -14,14 +14,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
-
 import java.util.ArrayList;
 
 
@@ -36,6 +34,9 @@ public class DisplayLocationActivity extends ActionBarActivity
     // Unique tag for the error dialog fragment
     private static final String DIALOG_ERROR = "dialog_error";
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,20 @@ public class DisplayLocationActivity extends ActionBarActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+
     }
+    public void confirm(View view) {
+        UserData ud = new UserData(1, "Time", "Location", "Purpose");
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+
+
+
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -184,4 +198,6 @@ public class DisplayLocationActivity extends ActionBarActivity
             ((MainActivity) getActivity()).onDialogDismissed();
         }
     }
+
+
 }
