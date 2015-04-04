@@ -1,7 +1,8 @@
 package com.gatech.whereabouts.whereabouts;
 
 /**
- * Created by Moon Chang on 3/29/2015.
+ * Created by MChang on 3/29/2015.
+ * Edited by KSion on 4/03/2015.
  */
 
 import android.content.ContentValues;
@@ -10,21 +11,37 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Moon Chang on 3/29/2015.
- */
+/*
+start time (dummy or previous time) and end time
+confirmed or not [skip button or confirm] [boolean]
+category --> help suggest the purpose
+first step : implement trip purpose list first ! simple first
+future : lookup table for mapping foursquare or yelp tags to help suggest trip purpose
+analytic view :
+treating work (schoolo) and home as special anchor locations -> through trip purpose options
+settings -> export database as csv (order by time)*/
+
 public class DatabaseHandler extends SQLiteOpenHelper {
 
+    private static final Timestamp BIRTH = new Timestamp(2015, 1, 1, 0, 0, 0, 0);
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "dataManager",
-            TABLE_DATA = "data",
+    private static final String DATABASE_NAME = "WhereAbouts",
+            TABLE_DATA = "user_data",
             KEY_ID = "id",
-            KEY_TIME = "time",
-            KEY_LOCATION = "location",
-            KEY_PURPOSE = "purpose";
+            KEY_START_DATETIME = "startDateTime",
+            KEY_END_DATETIME = "endDateTime",
+            KEY_START_LAT = "startLat",
+            KEY_START_LNG = "startLng",
+            KEY_END_LAT = "endLat",
+            KEY_END_LNG = "endLng",
+            KEY_CONFIRMED = "confirmed",
+            KEY_PLACE_NAME = "placeName",
+            KEY_TRIP_PURPOSE = "tripPurpose",
+            KEY_TAGS = "tags";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -32,13 +49,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_TIME + " TEXT," + KEY_LOCATION + " TEXT," + KEY_PURPOSE + " TEXT)");
+        StringBuilder constructor = new StringBuilder();
+        constructor.append("CREATE TABLE "      + TABLE_DATA + "(");
+        constructor.append(KEY_ID               + " INTEGER PRIMARY KEY,");
+        constructor.append(KEY_START_DATETIME   + " NUMERIC,");
+        constructor.append(KEY_END_DATETIME     + " NUMERIC,");
+        constructor.append(KEY_START_LAT        + " REAL,");
+        constructor.append(KEY_START_LNG        + " REAL,");
+        constructor.append(KEY_END_LAT          + " REAL,");
+        constructor.append(KEY_END_LNG          + " REAL,");
+        constructor.append(KEY_CONFIRMED        + " NUMERIC,");
+        constructor.append(KEY_PLACE_NAME       + " TEXT,");
+        constructor.append(KEY_TRIP_PURPOSE     + " TEXT,");
+        constructor.append(KEY_TAGS             + " TEXT)");
+
+        db.execSQL(constructor.toString());
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DATA);
-
         onCreate(db);
     }
 
@@ -47,38 +77,74 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("delete from " + TABLE_DATA);
     }
 
-    public void createData(UserData ud) {
+    public void resetTable() {
         SQLiteDatabase db = getWritableDatabase();
+        onUpgrade(db, 0, 0);
+    }
 
+    public void createData(UserDataStruct ud) {
+        SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(KEY_TIME, ud.getTime());
-        values.put(KEY_LOCATION, ud.getLocation());
-        values.put(KEY_PURPOSE, ud.getPurpose());
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
+        int size = cursor.getCount();
 
+        if (size > 0) {
+            cursor.moveToLast();
+            values.put(KEY_START_DATETIME,  cursor.getString(2));  //endDateTime
+            values.put(KEY_START_LAT,       cursor.getDouble(5));  //endLat
+            values.put(KEY_START_LNG,       cursor.getDouble(6));  //endLng
+        } else {
+            values.put(KEY_START_DATETIME,  BIRTH.toString());
+            values.put(KEY_START_LAT,       0.0);
+            values.put(KEY_START_LNG,       0.0);
+        }
+
+        values.put(KEY_END_DATETIME,        ud.endDateTime.toString());
+        values.put(KEY_END_LAT,             ud.endLocLat);
+        values.put(KEY_END_LNG,             ud.endLocLng);
+        values.put(KEY_CONFIRMED,           ud.confirmed);
+        values.put(KEY_PLACE_NAME,           ud.placeName);
+        values.put(KEY_TRIP_PURPOSE,        ud.tripPurpose);
+        values.put(KEY_TAGS,                ud.tags);
 
         db.insert(TABLE_DATA, null, values);
         db.close();
     }
 
-    public UserData getData(int id) {
-        SQLiteDatabase db = getReadableDatabase();
+    public List<UserDataStruct> getAll() {
+        List<UserDataStruct> uds = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_DATA, new String[] { KEY_ID, KEY_TIME, KEY_LOCATION, KEY_PURPOSE}, KEY_ID + "=?", new String[] { String.valueOf(id) }, null, null, null, null );
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
 
-        if (cursor != null)
-            cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            do {
+                UserDataStruct ud = new UserDataStruct();
+                ud.id               = cursor.getInt(0);
+                ud.startDateTime    = new Timestamp(cursor.getLong(1));
+                ud.endDateTime      = new Timestamp(cursor.getLong(2));
+                ud.startLocLat      = cursor.getDouble(3);
+                ud.startLocLng      = cursor.getDouble(4);
+                ud.endLocLat        = cursor.getDouble(5);
+                ud.endLocLng        = cursor.getDouble(6);
+                ud.confirmed        = cursor.getInt(7) == 1;
+                ud.placeName        = cursor.getString(8);
+                ud.tripPurpose      = cursor.getString(9);
+                ud.tags             = cursor.getString(10);
 
-        UserData ud = new UserData(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3));
-        db.close();
+                uds.add(ud);
+            }
+            while (cursor.moveToNext());
+        }
         cursor.close();
-        return ud;
+        db.close();
+        return uds;
     }
 
-    public void deleteData(UserData ud) {
+    public Cursor getDatabaseCursor() {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_DATA, KEY_ID + "=?", new String[] { String.valueOf(ud.getId()) });
-        db.close();
+        return db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
     }
 
     public int getDataCount() {
@@ -87,40 +153,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = cursor.getCount();
         db.close();
         cursor.close();
-
         return count;
     }
 
-    public int updateData(UserData ud) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-
-        values.put(KEY_TIME, ud.getTime());
-        values.put(KEY_LOCATION, ud.getLocation());
-        values.put(KEY_PURPOSE, ud.getPurpose());
-
-        int rowsAffected = db.update(TABLE_DATA, values, KEY_ID + "=?", new String[] { String.valueOf(ud.getId()) });
-        db.close();
-
-        return rowsAffected;
-    }
-
-    public List<UserData> getAllDatas() {
-        List<UserData> uds = new ArrayList<UserData>();
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                uds.add(new UserData(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
-            }
-            while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return uds;
-    }
 }
 
