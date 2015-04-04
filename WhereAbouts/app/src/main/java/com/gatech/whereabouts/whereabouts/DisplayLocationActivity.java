@@ -1,8 +1,5 @@
 package com.gatech.whereabouts.whereabouts;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -14,51 +11,55 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class DisplayLocationActivity extends ActionBarActivity
-        implements ConnectionCallbacks, OnConnectionFailedListener {
+                                     implements ConnectionCallbacks, OnConnectionFailedListener {
 
     public GoogleApiClient client;
+    DatabaseHandler dbHandler;
     public Location location;
     public boolean mResolvingError = false;
-    // Request code to use when launching the resolution activity
+
     private static final int REQUEST_RESOLVE_ERROR = 1001;
-    // Unique tag for the error dialog fragment
-    private static final String DIALOG_ERROR = "dialog_error";
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbHandler = new DatabaseHandler(getApplicationContext());
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
-
     }
+
     public void confirm(View view) {
-        UserData ud = new UserData(1, "Time", "Location", "Purpose");
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        Date date = new Date();
+        String currTime = df.format(date.getTime());
+        UserDataStruct ud = new UserDataStruct();
+        ud.endDateTime         = Timestamp.valueOf(currTime);
+        ud.endLocLat           = location.getLatitude();
+        ud.endLocLng           = location.getLongitude();
+        ud.confirmed           = true;
+        ud.tripPurpose         = "Home"; //TODO: implement trip purpose list
+        ud.tags                = "home, residential, dorm"; //TODO: secondary goal
+
+
     }
-
-
-
-
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -150,21 +151,7 @@ public class DisplayLocationActivity extends ActionBarActivity
                 // There was an error with the resolution intent. Try again.
                 client.connect();
             }
-        } else {
-            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
-            showErrorDialog(result.getErrorCode());
-            mResolvingError = true;
         }
-    }
-
-    private void showErrorDialog(int errorCode) {
-        // Create a fragment for the error dialog
-        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
-        // Pass the error that should be displayed
-        Bundle args = new Bundle();
-        args.putInt(DIALOG_ERROR, errorCode);
-        dialogFragment.setArguments(args);
-        dialogFragment.show(this.getFragmentManager(), "errordialog");
     }
 
     @Override
@@ -180,24 +167,4 @@ public class DisplayLocationActivity extends ActionBarActivity
             }
         }
     }
-
-    public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() {
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Get the error code and retrieve the appropriate dialog
-            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
-            return GooglePlayServicesUtil.getErrorDialog(errorCode,
-                    this.getActivity(), REQUEST_RESOLVE_ERROR);
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            ((MainActivity) getActivity()).onDialogDismissed();
-        }
-    }
-
-
 }
