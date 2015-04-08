@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,7 +33,6 @@ public class DisplayLocationActivity extends ActionBarActivity
     DatabaseHandler dbHandler;
     public Location location;
     public boolean mResolvingError = false;
-    final String[] purposes = new TripPurposes().purposes;
 
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
@@ -60,11 +60,16 @@ public class DisplayLocationActivity extends ActionBarActivity
         ud.endLocLat           = location.getLatitude();
         ud.endLocLng           = location.getLongitude();
         ud.confirmed           = true;
-        ud.placeName           = String.valueOf(placeName.getSelectedItem());
-        ud.tripPurpose         = purposes[tripPurpose.getSelectedItemPosition()];
-        ud.tags                = String.valueOf(tripCategories.getSelectedItem());
+        ud.placeName           = (String) placeName.getSelectedItem();
+        ud.tripPurpose         = (String) tripPurpose.getSelectedItem();
+        ud.tags                = (String) tripCategories.getSelectedItem();
 
         dbHandler.createData(ud);
+
+        Toast.makeText(getApplicationContext(), "Location Confirmed", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -129,10 +134,11 @@ public class DisplayLocationActivity extends ActionBarActivity
                 }
             });
 
+
             ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_spinner_item,
-                    purposes
+                    new TripPurposes().purposes
             );
 
             tripPurpose.setPrompt("Select trip purpose");

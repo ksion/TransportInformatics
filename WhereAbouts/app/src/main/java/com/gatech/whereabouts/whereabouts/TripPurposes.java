@@ -6,6 +6,7 @@ package com.gatech.whereabouts.whereabouts;
 
 public class TripPurposes {
     String[] purposes = {
+            "Select Trip Purpose",
             "Home",
             "Work",
             "School",
