@@ -32,6 +32,7 @@ public class DisplayLocationActivity extends ActionBarActivity
     DatabaseHandler dbHandler;
     public Location location;
     public boolean mResolvingError = false;
+    final String[] purposes = new TripPurposes().purposes;
 
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
@@ -50,15 +51,20 @@ public class DisplayLocationActivity extends ActionBarActivity
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         Date date = new Date();
         String currTime = df.format(date.getTime());
+        Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
+        Spinner tripCategories  = (Spinner) findViewById(R.id.tpcategoryselect);
+        Spinner placeName = (Spinner) findViewById(R.id.locationreal);
+
         UserDataStruct ud = new UserDataStruct();
         ud.endDateTime         = Timestamp.valueOf(currTime);
         ud.endLocLat           = location.getLatitude();
         ud.endLocLng           = location.getLongitude();
         ud.confirmed           = true;
-        ud.tripPurpose         = "Home"; //TODO: implement trip purpose list
-        ud.tags                = "home, residential, dorm"; //TODO: secondary goal
+        ud.placeName           = String.valueOf(placeName.getSelectedItem());
+        ud.tripPurpose         = purposes[tripPurpose.getSelectedItemPosition()];
+        ud.tags                = String.valueOf(tripCategories.getSelectedItem());
 
-
+        dbHandler.createData(ud);
     }
 
     @Override
@@ -93,6 +99,8 @@ public class DisplayLocationActivity extends ActionBarActivity
             final FourSquareResponse locations = client.execute();
 
             Spinner realLocation = (Spinner) findViewById(R.id.locationreal);
+            Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
+
             ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_spinner_item,
@@ -102,6 +110,7 @@ public class DisplayLocationActivity extends ActionBarActivity
             realLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    //TODO: implement database search for similar locations to find trip purposes
                     Spinner categorySelect = (Spinner) findViewById(R.id.tpcategoryselect);
 
                     ArrayList<FourSquareVenue> venues = locations.getVenues();
@@ -119,6 +128,15 @@ public class DisplayLocationActivity extends ActionBarActivity
                     //mao
                 }
             });
+
+            ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    purposes
+            );
+
+            tripPurpose.setPrompt("Select trip purpose");
+            tripPurpose.setAdapter(tripPurposeAdapter);
         }
     }
 

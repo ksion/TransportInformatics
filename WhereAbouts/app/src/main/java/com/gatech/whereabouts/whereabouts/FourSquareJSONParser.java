@@ -19,7 +19,6 @@ public class FourSquareJSONParser {
 
     public FourSquareResponse parse(JSONObject in) {
         try {
-            Log.i("Final", "hope this works");
             return readJSONStream(in.getJSONObject("response"));
         } catch (JSONException e) {
             Log.e("Error", "Something bad happened!", e);
