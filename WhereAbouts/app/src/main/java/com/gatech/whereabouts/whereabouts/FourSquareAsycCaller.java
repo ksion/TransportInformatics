@@ -2,7 +2,6 @@ package com.gatech.whereabouts.whereabouts;
 
 import android.location.Location;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -101,7 +100,6 @@ public class FourSquareAsycCaller {
         protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
             //Do anything with response..
-            Log.i("readStream", "i think it worked?! Place breakpoint here.");
         }
     }
 }

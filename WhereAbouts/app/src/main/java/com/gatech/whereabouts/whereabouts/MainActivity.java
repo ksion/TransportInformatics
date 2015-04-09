@@ -10,8 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
 
     DatabaseHandler dbHandler;
     TextView textView;
-    GridView dataListView;
+    ListView dataListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         dbHandler = new DatabaseHandler(getApplicationContext());
         textView = (TextView) findViewById(R.id.textView);
-        dataListView = (GridView) findViewById(R.id.listView);
+        dataListView = (ListView) findViewById(R.id.listView);
     }
 
     @Override

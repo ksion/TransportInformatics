@@ -107,15 +107,27 @@
         android:text="@string/tp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tpselect"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/trippurpose"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_column="1"
         android:layout_row="4"
         android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:text="@string/tpselect" />
+        android:paddingTop="10dp" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/trippurpose"-->
+        <!--style="?android:attr/spinnerItemStyle"-->
+        <!--android:singleLine="true"-->
+        <!--android:layout_width="220dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_column="1"-->
+        <!--android:layout_row="4"-->
+        <!--android:ellipsize="marquee"-->
+        <!--android:textSize="18sp"-->
+        <!--android:textColor="#808080"-->
+        <!--android:text="[Select a Planet...]" />-->
 
     <Button
         android:id="@+id/button2"
