@@ -129,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
     public void listing(View view) {
         List<UserDataStruct> uds = dbHandler.getAll();
         if (uds.size() > 0) {
-            ListAdapter adapt = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+            ListAdapter adapt = new ArrayAdapterUserDataStruct(this, R.layout.list_userdata,
                     uds);
             dataListView.setAdapter(adapt);
         }
