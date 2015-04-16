@@ -54,12 +54,33 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:id="@+id/listView"
         android:layout_below="@+id/button2"
         android:layout_marginTop="61dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/bg"
+        android:scaleType="centerCrop"
+        android:layout_alignParentBottom="true" />
+
+    <ExpandableListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mylist"
+        android:layout_below="@+id/listView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="60dp" />
 
 </RelativeLayout>
     

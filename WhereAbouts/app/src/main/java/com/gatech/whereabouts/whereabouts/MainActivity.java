@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,7 +22,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +42,12 @@ public class MainActivity extends ActionBarActivity {
         dbHandler = new DatabaseHandler(getApplicationContext());
         textView = (TextView) findViewById(R.id.textView);
         dataListView = (ListView) findViewById(R.id.listView);
+
+
+        init();
+        expandableListView = (ExpandableListView) findViewById(R.id.mylist);
+        myExpandableListAdapter = new MyExpandableListAdapter(this, groupList, childMap);
+        expandableListView.setAdapter(myExpandableListAdapter);
     }
 
     @Override
@@ -133,5 +142,28 @@ public class MainActivity extends ActionBarActivity {
                     uds);
             dataListView.setAdapter(adapt);
         }
+    }
+    ExpandableListView expandableListView;
+    MyExpandableListAdapter myExpandableListAdapter;
+    List<String> groupList;
+    HashMap<String, List<String>> childMap;
+
+
+    private void init() {
+        groupList = new ArrayList<String>();
+        childMap = new HashMap<String, List<String>>();
+
+        List<String> groupList0 = new ArrayList<String>();
+        groupList0.add("groupList0 - 1");
+        groupList0.add("groupList0 - 2");
+        groupList0.add("groupList0 - 3");
+
+
+
+        groupList.add("Group List 0");
+
+
+        childMap.put(groupList.get(0), groupList0);
+
     }
 }
