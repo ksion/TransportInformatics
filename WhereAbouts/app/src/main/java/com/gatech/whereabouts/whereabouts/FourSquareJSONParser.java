@@ -7,8 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.util.LinkedList;
-import java.util.List;
 
 import static java.util.Calendar.getInstance;
 
@@ -34,16 +32,15 @@ public class FourSquareJSONParser {
         for (int i = 0; i < venues.length(); i++) {
             JSONObject o = venues.getJSONObject(i);
             String n = o.getString("name");
-            FourSquareLocation l = extractFourSquareLocation(o);
-            List<FourSquareCategory> c = extractFourSquareCategories(o);
-            response.addVenue(new FourSquareVenue(n, l, c));
+            PlaceLocation l = extractFourSquareLocation(o);
+            response.addVenue(new Venue(n, l));
         }
         return response;
     }
 
-    private FourSquareLocation extractFourSquareLocation(JSONObject o) throws JSONException {
+    private PlaceLocation extractFourSquareLocation(JSONObject o) throws JSONException {
         JSONObject location = o.getJSONObject("location");
-        FourSquareLocation l = new FourSquareLocation();
+        PlaceLocation l = new PlaceLocation();
 
         l.latitude = location.getDouble("lat");
         l.longitude = location.getDouble("lng");
@@ -55,20 +52,5 @@ public class FourSquareJSONParser {
         return l;
     }
 
-    private List<FourSquareCategory> extractFourSquareCategories(JSONObject o) throws JSONException {
-        JSONArray catArray = o.getJSONArray("categories");
-        List<FourSquareCategory> categories = new LinkedList<>();
 
-        for (int i = 0; i < catArray.length(); i++) {
-            JSONObject c = catArray.getJSONObject(i);
-            FourSquareCategory cat = new FourSquareCategory();
-            cat.name = c.getString("name");
-            cat.pluralName = c.getString("pluralName");
-            cat.shortName = c.getString("shortName");
-            cat.primary = c.getBoolean("primary");
-            categories.add(cat);
-        }
-
-        return categories;
-    }
 }

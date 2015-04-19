@@ -1,12 +1,18 @@
 package com.gatech.whereabouts.whereabouts;
 
-public class FourSquareLocation {
+public class PlaceLocation {
     public double latitude;
     public double longitude;
     public boolean valid;
     public String dateAdded;
 
-    public FourSquareLocation() {}
+    public PlaceLocation() {}
+
+    public PlaceLocation(double lat, double lng) {
+        latitude = lat;
+        longitude = lng;
+        valid = false;
+    }
 
     public void setValid() {
         if (latitude >= 99.0 || longitude > 180.0) {

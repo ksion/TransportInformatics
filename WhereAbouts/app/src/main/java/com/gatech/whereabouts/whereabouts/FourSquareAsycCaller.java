@@ -35,7 +35,8 @@ public class FourSquareAsycCaller {
                 "ll=" + l.getLatitude() + "," + l.getLongitude() + "&" +
                 "client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&" +
                 "client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&" +
-                "v=20150214";
+                "v=20150214&" +
+                "limit=5";
     }
 
     public FourSquareResponse execute() {

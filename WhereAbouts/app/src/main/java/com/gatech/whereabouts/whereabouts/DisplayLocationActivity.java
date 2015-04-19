@@ -2,9 +2,12 @@ package com.gatech.whereabouts.whereabouts;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,15 +27,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class DisplayLocationActivity extends ActionBarActivity
-                                     implements ConnectionCallbacks, OnConnectionFailedListener {
+        implements ConnectionCallbacks, OnConnectionFailedListener {
 
     public GoogleApiClient client;
     DatabaseHandler dbHandler;
     public Location location;
     public boolean mResolvingError = false;
+    public ArrayList<Venue> locations;
 
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
@@ -47,22 +53,40 @@ public class DisplayLocationActivity extends ActionBarActivity
                 .build();
     }
 
+    private ArrayList<Venue> mostRecentVenues() {
+        SQLiteDatabase db = dbHandler.getWritableDatabase();
+
+        ArrayList<Venue> ace = new ArrayList<>();
+        Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > DATE('now', '-3 days') limit 3", null);
+        int count = 0;
+        if (items.moveToFirst()) {
+            do {
+                Venue v = new Venue(items.getString(8),
+                        new PlaceLocation(items.getDouble(5), items.getDouble(6)));
+                ace.add(v);
+                count++;
+            } while (items.moveToNext());
+        }//populate list with three most recent places
+        Log.i("mao", "count: " + count);
+        return ace;
+    }
+
     public void confirm(View view) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         Date date = new Date();
         String currTime = df.format(date.getTime());
         Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
-        Spinner tripCategories  = (Spinner) findViewById(R.id.tpcategoryselect);
+        Spinner tripCategories = (Spinner) findViewById(R.id.tpcategoryselect);
         Spinner placeName = (Spinner) findViewById(R.id.locationreal);
 
         UserDataStruct ud = new UserDataStruct();
-        ud.endDateTime         = Timestamp.valueOf(currTime);
-        ud.endLocLat           = location.getLatitude();
-        ud.endLocLng           = location.getLongitude();
-        ud.confirmed           = true;
-        ud.placeName           = (String) placeName.getSelectedItem();
-        ud.tripPurpose         = (String) tripPurpose.getSelectedItem();
-        ud.tags                = (String) tripCategories.getSelectedItem();
+        ud.endDateTime = Timestamp.valueOf(currTime);
+        ud.endLocLat = location.getLatitude();
+        ud.endLocLng = location.getLongitude();
+        ud.confirmed = true;
+        ud.placeName = (String) placeName.getSelectedItem();
+        ud.tripPurpose = (String) tripPurpose.getSelectedItem();
+        ud.tags = (String) tripCategories.getSelectedItem();
 
         dbHandler.createData(ud);
 
@@ -101,49 +125,59 @@ public class DisplayLocationActivity extends ActionBarActivity
             longitude.setText(String.valueOf(location.getLongitude()));
 
             FourSquareAsycCaller client = new FourSquareAsycCaller(location);
-            final FourSquareResponse locations = client.execute();
+            final FourSquareResponse fourSquareLocations = client.execute();
 
-            Spinner realLocation = (Spinner) findViewById(R.id.locationreal);
-            Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
+            Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
+            locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
 
-            ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
+            ArrayAdapter<Venue> locationAdapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_spinner_item,
-                    locations.getVenueNames());
-            realLocation.setAdapter(locationAdapter);
-            realLocation.setSelection(0);
-            realLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    locations);
+            locationSpinner.setAdapter(locationAdapter);
+            locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    //TODO: implement database search for similar locations to find trip purposes
-                    Spinner categorySelect = (Spinner) findViewById(R.id.tpcategoryselect);
 
-                    ArrayList<FourSquareVenue> venues = locations.getVenues();
-                    ArrayList<String> categories = venues.get(position).getVenueCategories();
-                    ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<>(
-                            parent.getContext(),
-                            android.R.layout.simple_spinner_item,
-                            categories);
-                    categorySelect.setAdapter(categoriesAdapter);
-                    categorySelect.setSelection(0);
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                    //mao
+
                 }
             });
-
-
-            ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
-                    this,
-                    android.R.layout.simple_spinner_item,
-                    new TripPurposes().purposes
-            );
-
-            tripPurpose.setPrompt("Select trip purpose");
-            tripPurpose.setAdapter(tripPurposeAdapter);
         }
+    }
+
+    private ArrayList<Venue> prioritizeLocations(Location location, ArrayList<Venue> pastVenues,
+                                                 FourSquareResponse fourSquareLocations) {
+        ArrayList<Venue> fourSquareVenues = fourSquareLocations.getVenues();
+        ArrayList<Venue> priority = new ArrayList<>();
+
+        ArrayList<Venue> allVenues = new ArrayList<>();
+        allVenues.addAll(pastVenues);
+        allVenues.addAll(fourSquareVenues);
+
+        Map<Double, DataStore> queue = new TreeMap<>(); //handles sorting
+        for (int i = 0; i < allVenues.size(); i++) {
+            double euclideanDist = Math.sqrt(
+                    Math.pow(location.getLatitude() - allVenues.get(i).location.latitude, 2) +
+                            Math.pow(location.getLongitude() - allVenues.get(i).location.longitude, 2));
+
+            if (euclideanDist < 3) {
+                queue.put(euclideanDist, new DataStore(i, allVenues.get(i)));
+            }
+        }
+
+        ArrayList<String> trackDupes = new ArrayList<>();
+        for (DataStore d : queue.values()) {
+            if (!trackDupes.contains(d.venue.name)) {
+                priority.add(d.venue);
+                trackDupes.add(d.venue.name);
+            }
+        }
+
+        return priority;
     }
 
     @Override
@@ -189,6 +223,17 @@ public class DisplayLocationActivity extends ActionBarActivity
                     client.connect();
                 }
             }
+        }
+    }
+
+
+    private class DataStore {
+        public int index;
+        public Venue venue;
+
+        public DataStore(int i, Venue v) {
+            index = i;
+            venue = v;
         }
     }
 }

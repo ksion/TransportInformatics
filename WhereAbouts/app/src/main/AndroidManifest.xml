@@ -30,5 +30,4 @@
                 android:value="com.gatech.whereabouts.whereabouts.MainActivity" />
         </activity>
     </application>
-
 </manifest>
