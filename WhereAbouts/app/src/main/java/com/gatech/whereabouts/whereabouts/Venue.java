@@ -7,10 +7,10 @@ public class Venue implements Comparable<Venue> {
 
     public String name;
     public PlaceLocation location;
-    public String[] categories;
+    public String categories;
 
     public Venue(String name, PlaceLocation location,
-                 String[] categories) {
+                 String categories) {
         this.name = name;
         this.location = location;
         this.categories = categories;
@@ -21,7 +21,7 @@ public class Venue implements Comparable<Venue> {
         this.location = location;
     }
 
-    public String[] getVenueCategories() {
+    public String getVenueCategories() {
         return categories;
     }
 

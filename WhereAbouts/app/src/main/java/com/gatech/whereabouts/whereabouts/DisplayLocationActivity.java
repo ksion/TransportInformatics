@@ -1,13 +1,11 @@
 package com.gatech.whereabouts.whereabouts;
 
 import android.content.Intent;
-import android.content.IntentSender;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,22 +23,23 @@ import com.google.android.gms.location.LocationServices;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
 
-public class DisplayLocationActivity extends ActionBarActivity
-        implements ConnectionCallbacks, OnConnectionFailedListener {
+public class DisplayLocationActivity extends ActionBarActivity implements
+        ConnectionCallbacks, OnConnectionFailedListener {
 
     public GoogleApiClient client;
     DatabaseHandler dbHandler;
     public Location location;
     public boolean mResolvingError = false;
     public ArrayList<Venue> locations;
-
-    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    public ArrayList<String> tripPurposeses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,49 +50,6 @@ public class DisplayLocationActivity extends ActionBarActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-    }
-
-    private ArrayList<Venue> mostRecentVenues() {
-        SQLiteDatabase db = dbHandler.getWritableDatabase();
-
-        ArrayList<Venue> ace = new ArrayList<>();
-        Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > DATE('now', '-3 days') limit 3", null);
-        int count = 0;
-        if (items.moveToFirst()) {
-            do {
-                Venue v = new Venue(items.getString(8),
-                        new PlaceLocation(items.getDouble(5), items.getDouble(6)));
-                ace.add(v);
-                count++;
-            } while (items.moveToNext());
-        }//populate list with three most recent places
-        Log.i("mao", "count: " + count);
-        return ace;
-    }
-
-    public void confirm(View view) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-        Date date = new Date();
-        String currTime = df.format(date.getTime());
-        Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
-        Spinner tripCategories = (Spinner) findViewById(R.id.tpcategoryselect);
-        Spinner placeName = (Spinner) findViewById(R.id.locationreal);
-
-        UserDataStruct ud = new UserDataStruct();
-        ud.endDateTime = Timestamp.valueOf(currTime);
-        ud.endLocLat = location.getLatitude();
-        ud.endLocLng = location.getLongitude();
-        ud.confirmed = true;
-        ud.placeName = (String) placeName.getSelectedItem();
-        ud.tripPurpose = (String) tripPurpose.getSelectedItem();
-        ud.tags = (String) tripCategories.getSelectedItem();
-
-        dbHandler.createData(ud);
-
-        Toast.makeText(getApplicationContext(), "Location Confirmed", Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -127,8 +83,11 @@ public class DisplayLocationActivity extends ActionBarActivity
             FourSquareAsycCaller client = new FourSquareAsycCaller(location);
             final FourSquareResponse fourSquareLocations = client.execute();
 
-            Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
+            final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
+            final Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
+
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
+            tripPurposeses = prioritizeTripPurposes(locations.get(0));
 
             ArrayAdapter<Venue> locationAdapter = new ArrayAdapter<>(
                     this,
@@ -136,6 +95,23 @@ public class DisplayLocationActivity extends ActionBarActivity
                     locations);
             locationSpinner.setAdapter(locationAdapter);
             locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    tripPurposeses = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+//                    tripPurposeses = prioritizeTripPurposes((Venue)locationSpinner.getSelectedItem());
+                }
+            });
+
+            ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    tripPurposeses);
+            tripPurposeSpinner.setAdapter(tripPurposeAdapter);
+            tripPurposeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -146,7 +122,76 @@ public class DisplayLocationActivity extends ActionBarActivity
 
                 }
             });
+
+
         }
+    }
+
+    private ArrayList<String> prioritizeTripPurposes(Venue curr) {
+        ArrayList<String> priority = new ArrayList<>();
+
+        if (curr.location.inDatabase) {
+            SQLiteDatabase db = dbHandler.getWritableDatabase();
+            Cursor item = db.rawQuery("select trip_purpose from user_data where endDateTime=" +
+                    curr.location.dateAdded + "and name=" + curr.name, null);
+
+            if (item.moveToFirst()) {
+                priority.add(item.getString(0));
+            }
+        }
+        List<String> tp = Arrays.asList(new TripPurposes().purposes);
+        if (!priority.isEmpty()) {
+            tp.remove(priority.get(0));
+        }
+
+        priority.addAll(tp);
+
+        return priority; //return most recent trip purpose if you have it
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+
+    private ArrayList<Venue> mostRecentVenues() {
+        SQLiteDatabase db = dbHandler.getWritableDatabase();
+
+        ArrayList<Venue> ace = new ArrayList<>();
+        Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > DATE('now', '-3 days') limit 3", null);
+        if (items.moveToFirst()) {
+            do {
+                Venue v = new Venue(items.getString(8),
+                        new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
+                v.location.dateAdded = items.getString(2);
+                ace.add(v);
+            } while (items.moveToNext());
+        }//populate list with three most recent places
+        return ace;
+    }
+
+    public void confirm(View view) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        Date date = new Date();
+        String currTime = df.format(date.getTime());
+        Spinner placeName = (Spinner) findViewById(R.id.locationreal);
+        Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
+
+        UserDataStruct ud = new UserDataStruct();
+        ud.endDateTime = Timestamp.valueOf(currTime);
+        ud.endLocLat = location.getLatitude();
+        ud.endLocLng = location.getLongitude();
+        ud.confirmed = true;
+        ud.placeName = ((Venue) placeName.getSelectedItem()).name;
+        ud.tripPurpose = (String) tripPurpose.getSelectedItem();
+
+        dbHandler.createData(ud);
+
+        Toast.makeText(getApplicationContext(), "Location Confirmed", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private ArrayList<Venue> prioritizeLocations(Location location, ArrayList<Venue> pastVenues,
@@ -183,9 +228,8 @@ public class DisplayLocationActivity extends ActionBarActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if (!mResolvingError) {  // more about this later
-            client.connect();
-        }
+        client.connect();
+
     }
 
     @Override
@@ -195,37 +239,9 @@ public class DisplayLocationActivity extends ActionBarActivity
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        if (!mResolvingError && result.hasResolution()) {
-            try {
-                mResolvingError = true;
-                result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
-            } catch (IntentSender.SendIntentException e) {
-                // There was an error with the resolution intent. Try again.
-                client.connect();
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_RESOLVE_ERROR) {
-            mResolvingError = false;
-            if (resultCode == RESULT_OK) {
-                // Make sure the app is not already connected or attempting to connect
-                if (!client.isConnecting() &&
-                        !client.isConnected()) {
-                    client.connect();
-                }
-            }
-        }
-    }
-
 
     private class DataStore {
         public int index;
