@@ -9,28 +9,59 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ExpandableListView;
 
 import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
     DatabaseHandler dbHandler;
-    TextView textView;
-    ListView dataListView;
+    ExpandableListView locationListView;
+    ExpandableListView tripPurposeListView;
+
+    ExpandableSelectListAdapter locationExpandableAdapter;
+    ExpandableSelectListAdapter tripPurposeExpandableAdapter;
+
+    List<String> groupListLocation;
+    HashMap<String, List<String>> childMapLocation;
+
+    List<String> groupListPurpose;
+    HashMap<String, List<String>> childMapPurpose;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHandler = new DatabaseHandler(getApplicationContext());
-        textView = (TextView) findViewById(R.id.textView);
-        dataListView = (ListView) findViewById(R.id.listView);
+
+        init();
+        locationListView = (ExpandableListView) findViewById(R.id.placelist);
+        locationExpandableAdapter = new ExpandableSelectListAdapter(
+                this,
+                groupListLocation,
+                childMapLocation,
+                R.layout.placelist_parent,
+                R.layout.placelist_child
+        );
+        locationListView.setAdapter(locationExpandableAdapter);
+
+        tripPurposeListView = (ExpandableListView) findViewById(R.id.purposelist);
+        tripPurposeExpandableAdapter = new ExpandableSelectListAdapter(
+                this,
+                groupListPurpose,
+                childMapPurpose,
+                R.layout.purposelist_parent,
+                R.layout.purposelist_child
+        );
+        tripPurposeListView.setAdapter(tripPurposeExpandableAdapter);
     }
 
     @Override
@@ -42,12 +73,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -96,4 +123,43 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void init() {
+        groupListLocation = new ArrayList<>();
+        childMapLocation = new HashMap<>();
+
+        List<String> groupList0 = new ArrayList<>();
+        groupList0.add("groupList0 - 1");
+        groupList0.add("groupList0 - 2");
+        groupList0.add("groupList0 - 3");
+        groupList0.add("groupList0 - 4");
+        groupList0.add("groupList0 - 5");
+        groupList0.add("groupList0 - 6");
+        groupList0.add("groupList0 - 7");
+        groupList0.add("groupList0 - 8");
+        groupList0.add("groupList0 - 9");
+        groupList0.add("Other");
+
+        groupListLocation.add("blah blah");
+        childMapLocation.put(groupListLocation.get(0), groupList0);
+
+        groupListPurpose = new ArrayList<>();
+        childMapPurpose = new HashMap<>();
+
+        List<String> groupList2 = new ArrayList<>();
+        groupList2.add("groupList0 - 1");
+        groupList2.add("groupList0 - 2");
+        groupList2.add("groupList0 - 3");
+        groupList2.add("groupList0 - 4");
+        groupList2.add("groupList0 - 5");
+        groupList2.add("groupList0 - 6");
+        groupList2.add("groupList0 - 7");
+        groupList2.add("groupList0 - 8");
+        groupList2.add("groupList0 - 9");
+        groupList2.add("Other");
+
+
+        groupListPurpose.add("blah blah purpose");
+        childMapPurpose.put(groupListPurpose.get(0), groupList2);
+
+    }
 }
