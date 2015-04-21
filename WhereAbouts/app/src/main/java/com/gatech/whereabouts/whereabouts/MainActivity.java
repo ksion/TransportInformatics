@@ -96,34 +96,4 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-//    public void dbTest(View view) {
-//        UserDataStruct ud = new UserDataStruct();
-//        Date d = new Date();
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-//        String currTime = df.format(d.getTime());
-//        ud.endDateTime         = Timestamp.valueOf(currTime); //10min
-//        ud.endLocLat           = 33.777614;
-//        ud.endLocLng           = -84.404826; // 6th street apartments
-//        ud.confirmed           = true;
-//        ud.placeName           = "Sixth Street Apartments";
-//        ud.tripPurpose         = "Home";
-//        ud.tags                = "home, residential, dorm";
-//        dbHandler.createData(ud);
-//        Toast.makeText(getApplicationContext(), "Data has been added", Toast.LENGTH_SHORT).show();
-//        textView.setText("#Datapoints: "+ dbHandler.getDataCount());
-//    }
-//
-//    public void clear(View view) {
-//        dbHandler.deleteAll();
-//        textView.setText("#Datapoints: " + dbHandler.getDataCount());
-//    }
-//
-//    public void listing(View view) {
-//        List<UserDataStruct> uds = dbHandler.getAll();
-//        if (uds.size() > 0) {
-//            ListAdapter adapt = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-//                    uds);
-//            dataListView.setAdapter(adapt);
-//        }
-//    }
 }
