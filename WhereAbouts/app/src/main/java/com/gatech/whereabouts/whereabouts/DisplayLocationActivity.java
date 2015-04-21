@@ -99,7 +99,6 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
             final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
 
-
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
             tripPurposeses = prioritizeTripPurposes(locations.get(0));
 
@@ -136,7 +135,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         for (String fstag : fourSqTags) {
             for (Map.Entry<String,String> k : keywordDictionary.entrySet()) {
                 for (String keyword : k.getValue().split(",")) {
-                   if (fstag.equalsIgnoreCase(keyword) && !ace.contains(keyword)) {
+                   if (fstag.equalsIgnoreCase(keyword) && !ace.contains(k.getKey())) {
                        ace.add(k.getKey());
                    }
                 }
