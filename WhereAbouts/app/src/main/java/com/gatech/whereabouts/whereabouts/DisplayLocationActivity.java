@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,9 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,11 +44,21 @@ public class DisplayLocationActivity extends ActionBarActivity implements
     public boolean mResolvingError = false;
     public ArrayList<Venue> locations;
     public ArrayList<String> tripPurposeses;
+    public Map<String, String> keywordDictionary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dbHandler = new DatabaseHandler(getApplicationContext());
+        try {
+            keywordDictionary = TripPurposes.loadFromJSONTripPurposes(
+                    getResources().openRawResource(R.raw.keyword_dictionary));
+            Log.i("keywordDic", String.valueOf(keywordDictionary.isEmpty()));
+        } catch (IOException e) {
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
