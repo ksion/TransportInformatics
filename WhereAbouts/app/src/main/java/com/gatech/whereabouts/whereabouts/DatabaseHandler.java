@@ -15,16 +15,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-start time (dummy or previous time) and end time
-confirmed or not [skip button or confirm] [boolean]
-category --> help suggest the purpose
-first step : implement trip purpose list first ! simple first
-future : lookup table for mapping foursquare or yelp tags to help suggest trip purpose
-analytic view :
-treating work (schoolo) and home as special anchor locations -> through trip purpose options
-settings -> export database as csv (order by time)*/
-
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final Timestamp BIRTH = new Timestamp(2015, 1, 1, 0, 0, 0, 0);
@@ -51,17 +41,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         StringBuilder constructor = new StringBuilder();
         constructor.append("CREATE TABLE "      + TABLE_DATA + "(");
-        constructor.append(KEY_ID               + " INTEGER PRIMARY KEY,");
-        constructor.append(KEY_START_DATETIME   + " NUMERIC,");
-        constructor.append(KEY_END_DATETIME     + " NUMERIC,");
-        constructor.append(KEY_START_LAT        + " REAL,");
-        constructor.append(KEY_START_LNG        + " REAL,");
-        constructor.append(KEY_END_LAT          + " REAL,");
-        constructor.append(KEY_END_LNG          + " REAL,");
-        constructor.append(KEY_CONFIRMED        + " NUMERIC,");
-        constructor.append(KEY_PLACE_NAME       + " TEXT,");
-        constructor.append(KEY_TRIP_PURPOSE     + " TEXT,");
-        constructor.append(KEY_TAGS             + " TEXT)");
+        constructor.append(KEY_ID               + " INTEGER PRIMARY KEY,"); //0
+        constructor.append(KEY_START_DATETIME   + " NUMERIC,");             //1
+        constructor.append(KEY_END_DATETIME     + " NUMERIC,");             //2
+        constructor.append(KEY_START_LAT        + " REAL,");                //3
+        constructor.append(KEY_START_LNG        + " REAL,");                //4
+        constructor.append(KEY_END_LAT          + " REAL,");                //5
+        constructor.append(KEY_END_LNG          + " REAL,");                //6
+        constructor.append(KEY_CONFIRMED        + " NUMERIC,");             //7
+        constructor.append(KEY_PLACE_NAME       + " TEXT,");                //8
+        constructor.append(KEY_TRIP_PURPOSE     + " TEXT,");                //9
+        constructor.append(KEY_TAGS             + " TEXT)");                //10
 
         db.execSQL(constructor.toString());
     }
@@ -75,11 +65,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteAll() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("delete from " + TABLE_DATA);
-    }
-
-    public void resetTable() {
-        SQLiteDatabase db = getWritableDatabase();
-        onUpgrade(db, 0, 0);
     }
 
     public void createData(UserDataStruct ud) {
@@ -104,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_END_LAT,             ud.endLocLat);
         values.put(KEY_END_LNG,             ud.endLocLng);
         values.put(KEY_CONFIRMED,           ud.confirmed);
-        values.put(KEY_PLACE_NAME,           ud.placeName);
+        values.put(KEY_PLACE_NAME,          ud.placeName);
         values.put(KEY_TRIP_PURPOSE,        ud.tripPurpose);
         values.put(KEY_TAGS,                ud.tags);
 
