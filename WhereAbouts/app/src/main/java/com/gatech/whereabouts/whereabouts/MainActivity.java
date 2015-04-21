@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 
@@ -34,7 +35,6 @@ public class MainActivity extends ActionBarActivity {
 
     List<String> groupListPurpose;
     HashMap<String, List<String>> childMapPurpose;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +117,9 @@ public class MainActivity extends ActionBarActivity {
             }
             writer.close();
             curCSV.close();
+
+            Toast.makeText(getApplicationContext(), "Export to CSV Complete", Toast.LENGTH_SHORT).show();
+
         }
         catch(Exception sqlEx) {
             Log.e("MainActivity", sqlEx.getMessage(), sqlEx);

@@ -39,12 +39,12 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         ConnectionCallbacks, OnConnectionFailedListener {
 
     public GoogleApiClient client;
-    DatabaseHandler dbHandler;
+    public DatabaseHandler dbHandler;
     public Location location;
-    public boolean mResolvingError = false;
     public ArrayList<Venue> locations;
-    public ArrayList<String> tripPurposeses;
+    public ArrayList<String> tripPurposes;
     public Map<String, String> keywordDictionary;
+    public String savedTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,18 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        client.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        client.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -100,7 +112,6 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
 
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
-            tripPurposeses = prioritizeTripPurposes(locations.get(0));
 
             ArrayAdapter<Venue> locationAdapter = new ArrayAdapter<>(
                     this,
@@ -109,14 +120,18 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             locationSpinner.setAdapter(locationAdapter);
             locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    tripPurposeses = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
+                public void onItemSelected(AdapterView<?> parent, View view, int position,
+                                           long id) {
                     Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
+
+                    savedTags = ((Venue) locationSpinner.getSelectedItem()).categories;
+
+                    tripPurposes = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
 
                     ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
                             parent.getContext(),
                             android.R.layout.simple_spinner_item,
-                            tripPurposeses);
+                            tripPurposes);
 
                     tripPurposeSpinner.setAdapter(tripPurposeAdapter);
                     tripPurposeSpinner.setSelection(0);
@@ -129,40 +144,11 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         }
     }
 
-
-    private ArrayList<String> findTagInKeywordDictionary(String[] fourSqTags) {
-        ArrayList<String> ace = new ArrayList<>();
-        for (String fstag : fourSqTags) {
-            for (Map.Entry<String,String> k : keywordDictionary.entrySet()) {
-                for (String keyword : k.getValue().split(",")) {
-                   if (fstag.equalsIgnoreCase(keyword) && !ace.contains(k.getKey())) {
-                       ace.add(k.getKey());
-                   }
-                }
-            }
-        }
-        return ace;
-    }
+    @Override
+    public void onConnectionSuspended(int i) { }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    private ArrayList<Venue> mostRecentVenues() {
-        SQLiteDatabase db = dbHandler.getWritableDatabase();
-        ArrayList<Venue> ace = new ArrayList<>();
-        Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > DATE('now', '-3 days') limit 3", null);
-        if (items.moveToFirst()) {
-            do {
-                Venue v = new Venue(items.getString(8),
-                        new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
-                v.location.dateAdded = items.getString(2);
-                ace.add(v);
-            } while (items.moveToNext());
-        }//populate list with three most recent places
-        return ace;
-    }
+    public void onConnectionFailed(ConnectionResult connectionResult) { }
 
     public void confirm(View view) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
@@ -178,6 +164,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         ud.confirmed = true;
         ud.placeName = ((Venue) placeName.getSelectedItem()).name;
         ud.tripPurpose = (String) tripPurpose.getSelectedItem();
+        ud.tags = savedTags == null || savedTags.isEmpty() ? savedTags : "";
 
         dbHandler.createData(ud);
 
@@ -185,6 +172,23 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    private ArrayList<Venue> mostRecentVenues() {
+        SQLiteDatabase db = dbHandler.getWritableDatabase();
+        ArrayList<Venue> ace = new ArrayList<>();
+        Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > " +
+                "DATE('now', '-3 days') limit 3", null);
+        if (items.moveToFirst()) {
+            do {
+                Venue v = new Venue(items.getString(8),
+                        new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
+                v.location.dateAdded = items.getString(2);
+                v.categories = items.getString(10);
+                ace.add(v);
+            } while (items.moveToNext());
+        }//populate list with three most recent places
+        return ace;
     }
 
     private ArrayList<Venue> prioritizeLocations(Location location, ArrayList<Venue> pastVenues,
@@ -234,43 +238,39 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             if (!priority.isEmpty()) {
                 tp.remove(priority.get(0));
             }
+        }
 
-            priority.addAll(tp);
-        } else {
+        if (curr.categories != null) {
             String[] fourSqTags = curr.categories.split(",");
             ArrayList<String> foundTripPurpose = findTagInKeywordDictionary(fourSqTags);
 
-            if (foundTripPurpose.isEmpty()) {
+            if (foundTripPurpose.isEmpty() && priority.isEmpty()) {
                 tp.add(0, "Select your trip purpose");
-                priority.addAll(0, tp);
             } else {
                 priority.addAll(foundTripPurpose);
-                for(String x : foundTripPurpose) {
+                for (String x : foundTripPurpose) {
                     tp.remove(x);
                 }
-                priority.addAll(tp);
             }
         }
+
+        priority.addAll(tp);
 
         return priority; //return most recent trip purpose if you have it
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        client.connect();
-
-    }
-
-    @Override
-    protected void onStop() {
-        client.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
+    private ArrayList<String> findTagInKeywordDictionary(String[] fourSqTags) {
+        ArrayList<String> purposes = new ArrayList<>();
+        for (String fourSqTag : fourSqTags) {
+            for (Map.Entry<String,String> k : keywordDictionary.entrySet()) {
+                for (String keyword : k.getValue().split(",")) {
+                    if (fourSqTag.equalsIgnoreCase(keyword) && !purposes.contains(k.getKey())) {
+                        purposes.add(k.getKey());
+                    }
+                }
+            }
+        }
+        return purposes;
     }
 
     private class DataStore {

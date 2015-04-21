@@ -102,10 +102,6 @@ public class ExpandableSelectListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
-
-
-
 }
