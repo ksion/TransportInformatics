@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_END_LAT,             ud.endLocLat);
         values.put(KEY_END_LNG,             ud.endLocLng);
         values.put(KEY_CONFIRMED,           ud.confirmed);
-        values.put(KEY_PLACE_NAME,           ud.placeName);
+        values.put(KEY_PLACE_NAME,          ud.placeName);
         values.put(KEY_TRIP_PURPOSE,        ud.tripPurpose);
         values.put(KEY_TAGS,                ud.tags);
 

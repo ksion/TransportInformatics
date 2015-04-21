@@ -98,7 +98,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             final FourSquareResponse fourSquareLocations = client.execute();
 
             final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
-            final Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
+
 
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
             tripPurposeses = prioritizeTripPurposes(locations.get(0));
@@ -112,55 +112,37 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     tripPurposeses = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
+                    Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
+
+                    ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
+                            parent.getContext(),
+                            android.R.layout.simple_spinner_item,
+                            tripPurposeses);
+
+                    tripPurposeSpinner.setAdapter(tripPurposeAdapter);
+                    tripPurposeSpinner.setSelection(0);
                 }
 
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-//                    tripPurposeses = prioritizeTripPurposes((Venue)locationSpinner.getSelectedItem());
-                }
+                public void onNothingSelected(AdapterView<?> parent) { }
             });
-
-            ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
-                    this,
-                    android.R.layout.simple_spinner_item,
-                    tripPurposeses);
-            tripPurposeSpinner.setAdapter(tripPurposeAdapter);
-            tripPurposeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-
 
         }
     }
 
-    private ArrayList<String> prioritizeTripPurposes(Venue curr) {
-        ArrayList<String> priority = new ArrayList<>();
 
-        if (curr.location.inDatabase) {
-            SQLiteDatabase db = dbHandler.getWritableDatabase();
-            Cursor item = db.rawQuery("select trip_purpose from user_data where endDateTime=" +
-                    curr.location.dateAdded + "and name=" + curr.name, null);
-
-            if (item.moveToFirst()) {
-                priority.add(item.getString(0));
+    private ArrayList<String> findTagInKeywordDictionary(String[] fourSqTags) {
+        ArrayList<String> ace = new ArrayList<>();
+        for (String fstag : fourSqTags) {
+            for (Map.Entry<String,String> k : keywordDictionary.entrySet()) {
+                for (String keyword : k.getValue().split(",")) {
+                   if (fstag.equalsIgnoreCase(keyword) && !ace.contains(keyword)) {
+                       ace.add(k.getKey());
+                   }
+                }
             }
         }
-        List<String> tp = Arrays.asList(new TripPurposes().purposes);
-        if (!priority.isEmpty()) {
-            tp.remove(priority.get(0));
-        }
-
-        priority.addAll(tp);
-
-        return priority; //return most recent trip purpose if you have it
+        return ace;
     }
 
     @Override
@@ -168,10 +150,8 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
     }
 
-
     private ArrayList<Venue> mostRecentVenues() {
         SQLiteDatabase db = dbHandler.getWritableDatabase();
-
         ArrayList<Venue> ace = new ArrayList<>();
         Cursor items = db.rawQuery("select distinct * from user_data where endDateTime > DATE('now', '-3 days') limit 3", null);
         if (items.moveToFirst()) {
@@ -237,6 +217,43 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         }
 
         return priority;
+    }
+
+    private ArrayList<String> prioritizeTripPurposes(Venue curr) {
+        ArrayList<String> priority = new ArrayList<>();
+        List<String> tp = new ArrayList<>(Arrays.asList(new TripPurposes().purposes));
+
+        if (curr.location.inDatabase) {
+            SQLiteDatabase db = dbHandler.getWritableDatabase();
+            Cursor item = db.rawQuery("select tripPurpose from user_data where endDateTime='" +
+                    String.valueOf(curr.location.dateAdded.toCharArray()) + "' and placeName='" + curr.name + "'", null);
+
+            if (item.moveToFirst()) {
+                priority.add(item.getString(0));
+            }
+
+            if (!priority.isEmpty()) {
+                tp.remove(priority.get(0));
+            }
+
+            priority.addAll(tp);
+        } else {
+            String[] fourSqTags = curr.categories.split(",");
+            ArrayList<String> foundTripPurpose = findTagInKeywordDictionary(fourSqTags);
+
+            if (foundTripPurpose.isEmpty()) {
+                tp.add(0, "Select your trip purpose");
+                priority.addAll(0, tp);
+            } else {
+                priority.addAll(foundTripPurpose);
+                for(String x : foundTripPurpose) {
+                    tp.remove(x);
+                }
+                priority.addAll(tp);
+            }
+        }
+
+        return priority; //return most recent trip purpose if you have it
     }
 
     @Override

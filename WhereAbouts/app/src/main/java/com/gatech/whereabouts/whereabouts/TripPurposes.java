@@ -20,21 +20,21 @@ import java.util.Map;
 
 public class TripPurposes {
     String[] purposes = {
-            "Select Trip Purpose",
-            "Home",
+            "Home / Residential",
             "Work",
             "School",
             "Religious",
             "Medical",
             "Dental",
-            "Shopping/Errands",
-            "Social/Recreational",
+            "Shopping / Errands",
+            "Social / Recreational",
             "Family",
             "Personal Business",
             "Transporting Someone",
             "Meals",
             "Other"
     };
+
 
     public static Map<String, String> loadFromJSONTripPurposes(InputStream in) throws IOException, JSONException {
 

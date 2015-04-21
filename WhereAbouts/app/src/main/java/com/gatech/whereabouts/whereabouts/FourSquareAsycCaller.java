@@ -25,7 +25,7 @@ public class FourSquareAsycCaller {
                 "client_id=UHQDD5ZR4JJVTNQ5KVEZ2TDRICVMMX2BZ4IFL454EUZXSC4P&" +
                 "client_secret=EJ2U4YPYAZUIBQWVWL2VSEI0QMK0ZJGVHUEWWA0YABMXLP4I&" +
                 "v=20150214&" +
-                "limit=5";
+                "limit=10";
     }
 
     public FourSquareResponse execute() {
