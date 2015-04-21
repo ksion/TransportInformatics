@@ -113,6 +113,4 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
-
-
 }
