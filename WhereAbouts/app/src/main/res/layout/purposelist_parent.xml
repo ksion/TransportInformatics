@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/group"
+        android:id="@+id/groupP"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:textColor="#666666"

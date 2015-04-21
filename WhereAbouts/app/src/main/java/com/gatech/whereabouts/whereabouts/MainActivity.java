@@ -40,14 +40,18 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHandler = new DatabaseHandler(getApplicationContext());
-        textView = (TextView) findViewById(R.id.textView);
-        dataListView = (ListView) findViewById(R.id.listView);
+
+
 
 
         init();
-        expandableListView = (ExpandableListView) findViewById(R.id.mylist);
+        expandableListView = (ExpandableListView) findViewById(R.id.placelist);
         myExpandableListAdapter = new MyExpandableListAdapter(this, groupList, childMap);
         expandableListView.setAdapter(myExpandableListAdapter);
+
+        expandableListViewP = (ExpandableListView) findViewById(R.id.purposelist);
+        myExpandableListAdapterP = new MyExpandableListAdapter(this, groupListP, childMapP);
+        expandableListViewP.setAdapter(myExpandableListAdapterP);
     }
 
     @Override
@@ -145,8 +149,15 @@ public class MainActivity extends ActionBarActivity {
     }
     ExpandableListView expandableListView;
     MyExpandableListAdapter myExpandableListAdapter;
+
+    ExpandableListView expandableListViewP;
+    MyExpandableListAdapter myExpandableListAdapterP;
+
     List<String> groupList;
     HashMap<String, List<String>> childMap;
+
+    List<String> groupListP;
+    HashMap<String, List<String>> childMapP;
 
 
     private void init() {
@@ -157,13 +168,47 @@ public class MainActivity extends ActionBarActivity {
         groupList0.add("groupList0 - 1");
         groupList0.add("groupList0 - 2");
         groupList0.add("groupList0 - 3");
+        groupList0.add("groupList0 - 4");
+        groupList0.add("groupList0 - 5");
+        groupList0.add("groupList0 - 6");
+        groupList0.add("groupList0 - 7");
+        groupList0.add("groupList0 - 8");
+        groupList0.add("groupList0 - 9");
+        groupList0.add("Other");
 
 
 
-        groupList.add("Group List 0");
+        groupList.add("blah blah");
 
 
         childMap.put(groupList.get(0), groupList0);
 
+        groupListP = new ArrayList<String>();
+        childMapP = new HashMap<String, List<String>>();
+
+        List<String> groupList2 = new ArrayList<String>();
+        groupList2.add("groupList0 - 1");
+        groupList2.add("groupList0 - 2");
+        groupList2.add("groupList0 - 3");
+        groupList2.add("groupList0 - 4");
+        groupList2.add("groupList0 - 5");
+        groupList2.add("groupList0 - 6");
+        groupList2.add("groupList0 - 7");
+        groupList2.add("groupList0 - 8");
+        groupList2.add("groupList0 - 9");
+        groupList2.add("Other");
+
+
+
+        groupListP.add("blah blah purpose");
+
+
+        childMapP.put(groupListP.get(0), groupList2);
+
     }
+
+
+
+
+
 }
