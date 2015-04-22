@@ -1,13 +1,13 @@
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MyActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/imageView"
+        android:id="@+id/imageView_bg"
         android:src="@drawable/bg"
         android:scaleType="centerCrop" />
 
@@ -26,7 +26,7 @@
             android:layout_height="40dp"
             android:text="Today's Date"
             android:id="@+id/datetime_display"
-            android:textSize="21dp"
+            android:textSize="21sp"
             android:layout_marginTop="40dp"/>
 
 
@@ -79,13 +79,18 @@
                 android:textSize="36dp"
                 android:textColor="#ffffff"/>
 
+
+
             <ExpandableListView
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/purposelist"
                 android:layout_gravity="top"
                 android:layout_marginTop="10dp"/>
+
         </LinearLayout>
+
+
 
         <LinearLayout
             android:orientation="horizontal"
@@ -97,16 +102,14 @@
                 android:layout_height="60dp"
                 android:background="#f05e69"
                 android:textColor="#ffffff"
-                android:text="@string/button_send"
-                android:onClick="sendMessage"
-                android:id="@+id/button" />
+                android:text="confirm"
+                android:id="@+id/button_confirm" />
             <Button
                 android:layout_width="140dp"
                 android:layout_height="60dp"
                 android:background="#dadada"
                 android:text="SKIP"
                 android:textColor="#ffffff"
-                android:onClick="sendMessage"
                 android:id="@+id/buttonskip"
                 android:layout_marginLeft="40dp"/>
         </LinearLayout>
@@ -116,4 +119,3 @@
 
 
 </RelativeLayout>
-    
