@@ -225,11 +225,13 @@ public class DisplayLocationActivity extends ActionBarActivity implements
     private ArrayList<String> prioritizeTripPurposes(Venue curr) {
         ArrayList<String> priority = new ArrayList<>();
         List<String> tp = new ArrayList<>(Arrays.asList(new TripPurposes().purposes));
-
         if (curr.location.inDatabase) {
             SQLiteDatabase db = dbHandler.getWritableDatabase();
-            Cursor item = db.rawQuery("select tripPurpose from user_data where endDateTime='" +
-                    String.valueOf(curr.location.dateAdded.toCharArray()) + "' and placeName='" + curr.name + "'", null);
+            String escapedName = curr.name.replaceAll("'", "\'");
+            String sqlQuery = "select tripPurpose from user_data where endDateTime='" +
+            String.valueOf(curr.location.dateAdded.toCharArray()) + "' and placeName='" + escapedName + "'";
+            Cursor item = db.rawQuery(sqlQuery, null);
+
 
             if (item.moveToFirst()) {
                 priority.add(item.getString(0));
