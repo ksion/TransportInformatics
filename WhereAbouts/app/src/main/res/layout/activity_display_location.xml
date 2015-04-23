@@ -20,7 +20,7 @@
 
         <TextClock
             android:id="@+id/datetime_display"
-            android:format12Hour="h:mm a, MMMM d, yyyy"
+            android:format12Hour="h:mm a MMMM d, yyyy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -48,13 +48,12 @@
 
             <Spinner
                 android:layout_width="320dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:background="#f2f2f2"
                 android:layout_marginTop="10dp"
                 android:id="@+id/locationList"
-                android:layout_weight="2.43"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dialog" />
 
         </LinearLayout>
 
@@ -85,7 +84,7 @@
                 android:background="#f2f2f2"
                 android:layout_marginTop="10dp"
                 android:id="@+id/purposeList"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dialog" />
 
         </LinearLayout>
 

@@ -84,7 +84,6 @@ public class DisplayLocationActivity extends ActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -226,7 +225,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         allVenues.addAll(pastVenues);
         allVenues.addAll(fourSquareVenues);
 
-        Map<Double, DataStore> queue = new TreeMap<>(); //handles sorting
+        Map<Double, DataStore> queue = new TreeMap<>();
         for (int i = 0; i < allVenues.size(); i++) {
             double euclideanDist = Math.sqrt(
                     Math.pow(location.getLatitude() - allVenues.get(i).location.latitude, 2) +
@@ -245,9 +244,11 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             }
         }
 
-        if (priority.size() > 6) { priority.subList(0, 6); }
-
-        return priority;
+        if (priority.size() > 10) {
+            return new ArrayList<>(priority.subList(0, 10));
+        } else {
+            return priority;
+        }
     }
 
     private ArrayList<String> prioritizeTripPurposes(Venue curr) {
@@ -273,6 +274,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             if (foundTripPurpose.isEmpty() && priority.isEmpty()) {
                 tp.add(0, "Select your trip purpose");
             } else {
+                priority.addAll(foundTripPurpose);
                 for (String x : foundTripPurpose) {
                     tp.remove(x);
                 }
