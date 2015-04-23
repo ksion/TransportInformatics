@@ -113,6 +113,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                     R.layout.spinner_list_item,
                     locations
             ));
+
             locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -126,53 +127,13 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                             R.layout.spinner_list_item,
                             tripPurposes
                     ));
+
                     tripPurposeSpinner.setSelection(0);
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) { }
             });
-
-
-
-
-//            locationListView = (ExpandableListView) findViewById(R.id.placelist);
-//            locationExpandableAdapter = new ExpandableSelectListAdapter<>(
-//                    this,
-//                    groupListLocation,
-//                    childMapLocation,
-//                    R.layout.placelist_parent,
-//                    R.layout.spinner_list_item
-//            );
-//            locationListView.setAdapter(locationExpandableAdapter);
-//            locationListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-//                @Override
-//                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                    savedTags = ((Venue) parent.getSelectedItem()).categories;
-//                    tripPurposes = prioritizeTripPurposes((Venue) parent.getSelectedItem());
-//
-//                    tripPurposeExpandableAdapter = new ExpandableSelectListAdapter<>(
-//                            parent.getContext(),
-//                            groupListPurpose,
-//                            childMapPurpose,
-//                            R.layout.purposelist_parent,
-//                            R.layout.purposelist_child
-//                    );
-//                    tripPurposeListView.setAdapter(tripPurposeExpandableAdapter);
-//                    tripPurposeListView.setSelection(0);
-//                    return false;
-//                }
-//            });
-
-//            tripPurposeListView = (ExpandableListView) findViewById(R.id.purposelist);
-//            tripPurposeExpandableAdapter = new ExpandableSelectListAdapter<>(
-//                    this,
-//                    groupListPurpose,
-//                    childMapPurpose,
-//                    R.layout.purposelist_parent,
-//                    R.layout.purposelist_child
-//            );
-//            tripPurposeListView.setAdapter(tripPurposeExpandableAdapter);
         }
     }
 
@@ -320,13 +281,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
         priority.addAll(tp);
 
-//
-//
-//        groupListPurpose.add(priority.get(0));
-//        childMapPurpose.put(priority.get(0), priority);
-
-
-        return priority; //return most recent trip purpose if you have it
+        return priority;
     }
 
     private ArrayList<String> findTagInKeywordDictionary(String[] fourSqTags) {
