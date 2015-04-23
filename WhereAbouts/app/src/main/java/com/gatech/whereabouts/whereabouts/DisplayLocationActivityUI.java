@@ -31,7 +31,7 @@ import java.util.TreeMap;
 
 
 /**
- * Created by liumomo610 on 4/22/15 at 9:48 PM at 9:49 PM.
+ * Created by liumomo610 on 4/22/15 at 9:48 PM.
  */
 public class DisplayLocationActivityUI extends ActionBarActivity implements
         ConnectionCallbacks, OnConnectionFailedListener{
