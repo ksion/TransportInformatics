@@ -13,15 +13,15 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 
-public class ExpandableSelectListAdapter extends BaseExpandableListAdapter {
+public class ExpandableSelectListAdapter<T> extends BaseExpandableListAdapter {
 
     private Context context;
-    private List<String> listGroup;
-    private HashMap<String, List<String>> listChild;
+    private List<T> listGroup;
+    private HashMap<T, List<T>> listChild;
     private int parentLayout, childLayout;
 
-    public ExpandableSelectListAdapter(Context context, List<String> listGroup,
-                                    HashMap<String, List<String>> listChild,
+    public ExpandableSelectListAdapter(Context context, List<T> listGroup,
+                                    HashMap<T, List<T>> listChild,
                                     int parentLayout, int childLayout) {
         this.context = context;
         this.listGroup = listGroup;
@@ -74,11 +74,11 @@ public class ExpandableSelectListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(parentLayout, null);
         }
 
-        String textGroup = (String) getGroup(groupPosition);
+        T textGroup = (T) getGroup(groupPosition);
 
         TextView textViewGroup = (TextView) convertView
                 .findViewById(R.id.group);
-        textViewGroup.setText(textGroup);
+        textViewGroup.setText(String.valueOf(textGroup.toString()));
 
         return convertView;
     }
@@ -94,9 +94,9 @@ public class ExpandableSelectListAdapter extends BaseExpandableListAdapter {
 
         TextView textViewItem = (TextView) convertView.findViewById(R.id.item);
 
-        String text = (String) getChild(groupPosition, childPosition);
+        T text = (T) getChild(groupPosition, childPosition);
 
-        textViewItem.setText(text);
+        textViewItem.setText(text.toString());
         return convertView;
     }
 

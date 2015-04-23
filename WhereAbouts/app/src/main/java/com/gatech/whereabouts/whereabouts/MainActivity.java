@@ -24,17 +24,7 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     DatabaseHandler dbHandler;
-    ExpandableListView locationListView;
-    ExpandableListView tripPurposeListView;
 
-    ExpandableSelectListAdapter locationExpandableAdapter;
-    ExpandableSelectListAdapter tripPurposeExpandableAdapter;
-
-    List<String> groupListLocation;
-    HashMap<String, List<String>> childMapLocation;
-
-    List<String> groupListPurpose;
-    HashMap<String, List<String>> childMapPurpose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,26 +32,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         dbHandler = new DatabaseHandler(getApplicationContext());
 
-        init();
-        locationListView = (ExpandableListView) findViewById(R.id.placelist);
-        locationExpandableAdapter = new ExpandableSelectListAdapter(
-                this,
-                groupListLocation,
-                childMapLocation,
-                R.layout.placelist_parent,
-                R.layout.placelist_child
-        );
-        locationListView.setAdapter(locationExpandableAdapter);
 
-        tripPurposeListView = (ExpandableListView) findViewById(R.id.purposelist);
-        tripPurposeExpandableAdapter = new ExpandableSelectListAdapter(
-                this,
-                groupListPurpose,
-                childMapPurpose,
-                R.layout.purposelist_parent,
-                R.layout.purposelist_child
-        );
-        tripPurposeListView.setAdapter(tripPurposeExpandableAdapter);
     }
 
     @Override
@@ -83,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayLocationActivity.class);
+        Intent intent = new Intent(this, DisplayLocationActivityUI.class);
         startActivity(intent);
     }
 
@@ -126,43 +97,5 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void init() {
-        groupListLocation = new ArrayList<>();
-        childMapLocation = new HashMap<>();
 
-        List<String> groupList0 = new ArrayList<>();
-        groupList0.add("groupList0 - 1");
-        groupList0.add("groupList0 - 2");
-        groupList0.add("groupList0 - 3");
-        groupList0.add("groupList0 - 4");
-        groupList0.add("groupList0 - 5");
-        groupList0.add("groupList0 - 6");
-        groupList0.add("groupList0 - 7");
-        groupList0.add("groupList0 - 8");
-        groupList0.add("groupList0 - 9");
-        groupList0.add("Other");
-
-        groupListLocation.add("blah blah");
-        childMapLocation.put(groupListLocation.get(0), groupList0);
-
-        groupListPurpose = new ArrayList<>();
-        childMapPurpose = new HashMap<>();
-
-        List<String> groupList2 = new ArrayList<>();
-        groupList2.add("groupList0 - 1");
-        groupList2.add("groupList0 - 2");
-        groupList2.add("groupList0 - 3");
-        groupList2.add("groupList0 - 4");
-        groupList2.add("groupList0 - 5");
-        groupList2.add("groupList0 - 6");
-        groupList2.add("groupList0 - 7");
-        groupList2.add("groupList0 - 8");
-        groupList2.add("groupList0 - 9");
-        groupList2.add("Other");
-
-
-        groupListPurpose.add("blah blah purpose");
-        childMapPurpose.put(groupListPurpose.get(0), groupList2);
-
-    }
 }
