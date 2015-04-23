@@ -1,115 +1,121 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_item"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:columnCount="2"
-    android:orientation="vertical"
-    android:paddingLeft="40dp"
-    android:paddingTop="80dp"
-    android:rowCount="6">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imageView_bg"
+        android:src="@drawable/bg"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/accessibility_descript" />
 
-    <TextView
-        android:id="@+id/LA"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="0"
-        android:gravity="left"
-        android:text="@string/latitude"
-        android:textStyle="bold" />
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="false"
+        android:weightSum="1">
 
-    <TextView
-        android:id="@+id/latitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="0"
-        android:paddingLeft="10dp"
-        android:text="@string/lacoordinates" />
+        <TextClock
+            android:id="@+id/datetime_display"
+            android:format12Hour="h:mm a, MMMM d, yyyy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp" />
 
-    <TextView
-        android:id="@+id/LO"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="1"
-        android:gravity="left"
-        android:paddingTop="10dp"
-        android:text="@string/longitude"
-        android:textStyle="bold" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:background="#fad024"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="1">
 
-    <TextView
-        android:id="@+id/longitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="1"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:text="@string/locoordinates" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/location_header"
+                android:id="@+id/textView_place"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="36sp"
+                android:textColor="#ffffff"/>
 
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="2"
-        android:paddingTop="10dp"
-        android:text="@string/location"
-        android:textStyle="bold"
+            <Spinner
+                android:layout_width="320dp"
+                android:layout_height="0dp"
+                android:layout_gravity="top"
+                android:background="#f2f2f2"
+                android:layout_marginTop="10dp"
+                android:id="@+id/locationList"
+                android:layout_weight="2.43"
+                android:spinnerMode="dropdown" />
 
-        />
+        </LinearLayout>
 
-    <Spinner
-        android:id="@+id/locationreal"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="2"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#0071bd"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_weight="0.22">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/purpose_header"
+                android:id="@+id/textView_purpose"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="36sp"
+                android:textColor="#ffffff"/>
 
-    <TextView
-        android:id="@+id/tp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="4"
-        android:paddingTop="10dp"
-        android:text="@string/tp"
-        android:textStyle="bold" />
+            <Spinner
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:background="#f2f2f2"
+                android:layout_marginTop="10dp"
+                android:id="@+id/purposeList"
+                android:spinnerMode="dropdown" />
 
-    <Spinner
-        android:id="@+id/trippurpose"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="4"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp" />
+        </LinearLayout>
 
-    <!--<TextView-->
-        <!--android:id="@+id/trippurpose"-->
-        <!--style="?android:attr/spinnerItemStyle"-->
-        <!--android:singleLine="true"-->
-        <!--android:layout_width="220dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_column="1"-->
-        <!--android:layout_row="4"-->
-        <!--android:ellipsize="marquee"-->
-        <!--android:textSize="18sp"-->
-        <!--android:textColor="#808080"-->
-        <!--android:text="[Select a Planet...]" />-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="5"
-        android:onClick="confirm"
-        android:text="CONFIRM" />
-</GridLayout>
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="60dp"
+                android:background="#f05e69"
+                android:textColor="#ffffff"
+                android:text="@string/confirm_btn"
+                android:id="@+id/button_confirm"
+                android:onClick="confirm"/>
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="60dp"
+                android:background="#dadada"
+                android:text="@string/skip_button"
+                android:textColor="#ffffff"
+                android:id="@+id/button_skip"
+                android:layout_marginLeft="40dp"
+                android:onClick="skip"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -10,9 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,9 +19,6 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,8 +30,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
+/**
+ * Created by liumomo610 on 4/22/15 at 9:48 PM at 9:49 PM.
+ */
 public class DisplayLocationActivity extends ActionBarActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener {
+        ConnectionCallbacks, OnConnectionFailedListener{
 
     public GoogleApiClient client;
     public DatabaseHandler dbHandler;
@@ -46,19 +44,23 @@ public class DisplayLocationActivity extends ActionBarActivity implements
     public Map<String, String> keywordDictionary;
     public String savedTags;
 
+    Spinner locationSpinner;
+    Spinner tripPurposeSpinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         dbHandler = new DatabaseHandler(getApplicationContext());
+
         try {
             keywordDictionary = TripPurposes.loadFromJSONTripPurposes(
                     getResources().openRawResource(R.raw.keyword_dictionary));
             Log.i("keywordDic", String.valueOf(keywordDictionary.isEmpty()));
-        } catch (IOException e) {
-
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -80,9 +82,6 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -100,47 +99,41 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         if (location != null) {
             setContentView(R.layout.activity_display_location);
 
-            TextView latitude = (TextView) findViewById(R.id.latitude);
-            TextView longitude = (TextView) findViewById(R.id.longitude);
-
-            latitude.setText(String.valueOf(location.getLatitude()));
-            longitude.setText(String.valueOf(location.getLongitude()));
-
             FourSquareAsycCaller client = new FourSquareAsycCaller(location);
             final FourSquareResponse fourSquareLocations = client.execute();
 
-            final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
-
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
+            tripPurposes = prioritizeTripPurposes(locations.get(0));
 
-            ArrayAdapter<Venue> locationAdapter = new ArrayAdapter<>(
+            locationSpinner = (Spinner) findViewById(R.id.locationList);
+            tripPurposeSpinner = (Spinner) findViewById(R.id.purposeList);
+
+            locationSpinner.setAdapter(new CustomSpinnerAdapter<>(
                     this,
-                    android.R.layout.simple_spinner_item,
-                    locations);
-            locationSpinner.setAdapter(locationAdapter);
+                    R.layout.spinner_list_item,
+                    locations
+            ));
+
             locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position,
-                                           long id) {
-                    Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                     savedTags = ((Venue) locationSpinner.getSelectedItem()).categories;
 
                     tripPurposes = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
 
-                    ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
+                    tripPurposeSpinner.setAdapter(new CustomSpinnerAdapter<>(
                             parent.getContext(),
-                            android.R.layout.simple_spinner_item,
-                            tripPurposes);
+                            R.layout.spinner_list_item,
+                            tripPurposes
+                    ));
 
-                    tripPurposeSpinner.setAdapter(tripPurposeAdapter);
                     tripPurposeSpinner.setSelection(0);
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) { }
             });
-
         }
     }
 
@@ -154,21 +147,41 @@ public class DisplayLocationActivity extends ActionBarActivity implements
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         Date date = new Date();
         String currTime = df.format(date.getTime());
-        Spinner placeName = (Spinner) findViewById(R.id.locationreal);
-        Spinner tripPurpose = (Spinner) findViewById(R.id.trippurpose);
 
         UserDataStruct ud = new UserDataStruct();
         ud.endDateTime = Timestamp.valueOf(currTime);
         ud.endLocLat = location.getLatitude();
         ud.endLocLng = location.getLongitude();
         ud.confirmed = true;
-        ud.placeName = ((Venue) placeName.getSelectedItem()).name;
-        ud.tripPurpose = (String) tripPurpose.getSelectedItem();
+        ud.placeName = ((Venue) locationSpinner.getSelectedItem()).name;
+        ud.tripPurpose = (String) tripPurposeSpinner.getSelectedItem();
         ud.tags = savedTags == null || savedTags.isEmpty() ? savedTags : "";
 
         dbHandler.createData(ud);
 
         Toast.makeText(getApplicationContext(), "Location Confirmed", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void skip(View view) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        Date date = new Date();
+        String currTime = df.format(date.getTime());
+
+        UserDataStruct ud = new UserDataStruct();
+        ud.endDateTime = Timestamp.valueOf(currTime);
+        ud.endLocLat = location.getLatitude();
+        ud.endLocLng = location.getLongitude();
+        ud.confirmed = false;
+        ud.placeName = "**Skipped**";
+        ud.tripPurpose = "**Skipped**";
+        ud.tags = savedTags == null || savedTags.isEmpty() ? savedTags : "";
+
+        dbHandler.createData(ud);
+
+        Toast.makeText(getApplicationContext(), "User Skip Confirmed", Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -181,13 +194,26 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                 "DATE('now', '-3 days') limit 3", null);
         if (items.moveToFirst()) {
             do {
-                Venue v = new Venue(items.getString(8),
-                        new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
-                v.location.dateAdded = items.getString(2);
-                v.categories = items.getString(10);
-                ace.add(v);
+                if (items.getInt(8) == 1) {
+                    double lat = items.getDouble(5);
+                    double lng = items.getDouble(6);
+
+                    double euclideanDist = Math.sqrt(
+                            Math.pow(location.getLatitude() - lat, 2) +
+                                    Math.pow(location.getLongitude() - lng, 2));
+
+                    if (euclideanDist < 0.9) {
+                        Venue v = new Venue(items.getString(8),
+                                new PlaceLocation(lat, lng, true));
+                        v.location.dateAdded = items.getString(2);
+                        v.categories = items.getString(10);
+                        ace.add(v);
+                    }
+                }
             } while (items.moveToNext());
-        }//populate list with three most recent places
+        }
+
+        items.close();
         return ace;
     }
 
@@ -206,7 +232,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                     Math.pow(location.getLatitude() - allVenues.get(i).location.latitude, 2) +
                             Math.pow(location.getLongitude() - allVenues.get(i).location.longitude, 2));
 
-            if (euclideanDist < 3) {
+            if (euclideanDist < 0.9) {
                 queue.put(euclideanDist, new DataStore(i, allVenues.get(i)));
             }
         }
@@ -219,6 +245,8 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             }
         }
 
+        if (priority.size() > 6) { priority.subList(0, 6); }
+
         return priority;
     }
 
@@ -229,17 +257,13 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             SQLiteDatabase db = dbHandler.getWritableDatabase();
             String escapedName = curr.name.replaceAll("'", "\'");
             String sqlQuery = "select tripPurpose from user_data where endDateTime='" +
-            String.valueOf(curr.location.dateAdded.toCharArray()) + "' and placeName='" + escapedName + "'";
+                    String.valueOf(curr.location.dateAdded.toCharArray()) + "' and placeName='" + escapedName + "'";
             Cursor item = db.rawQuery(sqlQuery, null);
 
+            if (item.moveToFirst()) { priority.add(item.getString(0)); }
 
-            if (item.moveToFirst()) {
-                priority.add(item.getString(0));
-            }
-
-            if (!priority.isEmpty()) {
-                tp.remove(priority.get(0));
-            }
+            if (!priority.isEmpty()) { tp.remove(priority.get(0)); }
+            item.close();
         }
 
         if (curr.categories != null) {
@@ -249,7 +273,6 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             if (foundTripPurpose.isEmpty() && priority.isEmpty()) {
                 tp.add(0, "Select your trip purpose");
             } else {
-                priority.addAll(foundTripPurpose);
                 for (String x : foundTripPurpose) {
                     tp.remove(x);
                 }
@@ -258,7 +281,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
 
         priority.addAll(tp);
 
-        return priority; //return most recent trip purpose if you have it
+        return priority;
     }
 
     private ArrayList<String> findTagInKeywordDictionary(String[] fourSqTags) {
