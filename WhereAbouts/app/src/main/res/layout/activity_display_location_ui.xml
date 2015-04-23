@@ -45,7 +45,7 @@
                 android:id="@+id/textView_place"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
-                android:textSize="36dp"
+                android:textSize="32dp"
                 android:textColor="#ffffff"/>
 
 
@@ -74,11 +74,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="And I am ..."
+                android:text="I am here for..."
                 android:id="@+id/textView_purpose"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
-                android:textSize="36dp"
+                android:textSize="32dp"
                 android:textColor="#ffffff"/>
 
 
