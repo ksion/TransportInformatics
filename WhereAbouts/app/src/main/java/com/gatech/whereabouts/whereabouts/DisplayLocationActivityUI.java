@@ -157,36 +157,6 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
                     R.layout.purposelist_child
             );
             tripPurposeListView.setAdapter(tripPurposeExpandableAdapter);
-
-
-//            ArrayAdapter<Venue> locationAdapter = new ArrayAdapter<>(
-//                    this,
-//                    android.R.layout.simple_spinner_item,
-//                    locations);
-//            locationSpinner.setAdapter(locationAdapter);
-//            locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                @Override
-//                public void onItemSelected(AdapterView<?> parent, View view, int position,
-//                                           long id) {
-//                    Spinner tripPurposeSpinner = (Spinner) findViewById(R.id.trippurpose);
-//
-//                    savedTags = ((Venue) locationSpinner.getSelectedItem()).categories;
-//
-//                    tripPurposes = prioritizeTripPurposes((Venue) locationSpinner.getSelectedItem());
-//
-//                    ArrayAdapter<String> tripPurposeAdapter = new ArrayAdapter<>(
-//                            parent.getContext(),
-//                            android.R.layout.simple_spinner_item,
-//                            tripPurposes);
-//
-//                    tripPurposeSpinner.setAdapter(tripPurposeAdapter);
-//                    tripPurposeSpinner.setSelection(0);
-//                }
-//
-//                @Override
-//                public void onNothingSelected(AdapterView<?> parent) { }
-//            });
-
         }
     }
 

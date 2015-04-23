@@ -27,7 +27,7 @@
             android:text="Today's Date"
             android:id="@+id/datetime_display"
             android:textSize="21sp"
-            android:layout_marginTop="40dp"/>
+            android:layout_marginTop="20dp"/>
 
 
         <LinearLayout
@@ -43,7 +43,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="I am at ..."
                 android:id="@+id/textView_place"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
                 android:textSize="36dp"
                 android:textColor="#ffffff"/>
@@ -53,7 +53,9 @@
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/placelist"
-                android:layout_marginTop="10dp"/>
+                android:background="#f2f2f2"
+                android:layout_marginTop="10dp"
+                />
 
 
 
@@ -74,7 +76,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="And I am ..."
                 android:id="@+id/textView_purpose"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
                 android:textSize="36dp"
                 android:textColor="#ffffff"/>
@@ -86,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/purposelist"
                 android:layout_gravity="top"
+                android:background="#f2f2f2"
                 android:layout_marginTop="10dp"/>
 
         </LinearLayout>
