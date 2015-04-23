@@ -19,28 +19,45 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        >
+        android:id="@+id/linearLayout">
 
 
 
-        <LinearLayout
+        <RelativeLayout
             android:orientation="horizontal"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp">
-            <Button
-                android:layout_width="140dp"
-                android:layout_height="60dp"
-                android:background="#f05e69"
-                android:textColor="#ffffff"
-                android:text="@string/button_send"
-                android:onClick="sendMessage"
-                android:id="@+id/button" />
 
-        </LinearLayout>
+            >
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="320dp"
+                android:src="@drawable/logo0"
+                android:scaleType="fitCenter"
+                android:layout_centerHorizontal="true"/>
+            <ImageView
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="240dp"
+                android:src="@drawable/logotext" />
+
+
+        </RelativeLayout>
 
     </LinearLayout>
 
+    <Button
+        android:layout_width="280dp"
+        android:layout_height="60dp"
+        android:background="#f05e69"
+        android:textColor="#ffffff"
+        android:text="@string/button_send"
+        android:onClick="sendMessage"
+        android:textSize="24dp"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="47dp" />
 
 
 </RelativeLayout>
