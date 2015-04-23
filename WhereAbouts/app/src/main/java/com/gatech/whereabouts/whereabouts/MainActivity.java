@@ -9,16 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -31,8 +27,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHandler = new DatabaseHandler(getApplicationContext());
-
-
     }
 
     @Override
