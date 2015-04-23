@@ -197,18 +197,18 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                 if (items.getInt(8) == 1) {
                     double lat = items.getDouble(5);
                     double lng = items.getDouble(6);
-//
-//                    double euclideanDist = Math.sqrt(
-//                            Math.pow(location.getLatitude() - lat, 2) +
-//                                    Math.pow(location.getLongitude() - lng, 2));
-//
-//                    if (euclideanDist < 0.9) {
-                    Venue v = new Venue(items.getString(8),
-                            new PlaceLocation(lat, lng, true));
-                    v.location.dateAdded = items.getString(2);
-                    v.categories = items.getString(10);
-                    ace.add(v);
 
+                    double euclideanDist = Math.sqrt(
+                            Math.pow(location.getLatitude() - lat, 2) +
+                                    Math.pow(location.getLongitude() - lng, 2));
+
+                    if (euclideanDist < 0.9) {
+                        Venue v = new Venue(items.getString(8),
+                                new PlaceLocation(lat, lng, true));
+                        v.location.dateAdded = items.getString(2);
+                        v.categories = items.getString(10);
+                        ace.add(v);
+                    }
                 }
             } while (items.moveToNext());
         }
