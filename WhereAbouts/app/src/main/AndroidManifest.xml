@@ -32,16 +32,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gatech.whereabouts.whereabouts.MainActivity" />
-          </activity>
-        <activity
-            android:name=".DisplayLocationActivityUI"
-            android:label="@string/title_activity_display_location"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.gatech.whereabouts.whereabouts.MainActivity" />
         </activity>
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCUypqYmyWZ1RZ-oFTOvq0vmV66VRIw1Sk"/>
 
