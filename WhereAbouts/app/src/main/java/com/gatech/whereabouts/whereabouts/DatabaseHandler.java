@@ -131,15 +131,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
     }
-
-    public int getDataCount() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
-        int count = cursor.getCount();
-        db.close();
-        cursor.close();
-        return count;
-    }
-
 }
 
