@@ -188,6 +188,30 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
         startActivity(intent);
     }
 
+    public void skip(View view) {
+        Venue skip = new Venue("**Skipped**",
+                new PlaceLocation(location.getLatitude(), location.getLongitude()));
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        Date date = new Date();
+        String currTime = df.format(date.getTime());
+
+        UserDataStruct ud = new UserDataStruct();
+        ud.endDateTime = Timestamp.valueOf(currTime);
+        ud.endLocLat = location.getLatitude();
+        ud.endLocLng = location.getLongitude();
+        ud.confirmed = false;
+        ud.placeName = skip.name;
+        ud.tripPurpose = "**Skipped**";
+        ud.tags = savedTags == null || savedTags.isEmpty() ? savedTags : "";
+
+        dbHandler.createData(ud);
+
+        Toast.makeText(getApplicationContext(), "User Opted Skip Complete", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     private ArrayList<Venue> mostRecentVenues() {
         SQLiteDatabase db = dbHandler.getWritableDatabase();
         ArrayList<Venue> ace = new ArrayList<>();
@@ -195,11 +219,13 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
                 "DATE('now', '-3 days') limit 3", null);
         if (items.moveToFirst()) {
             do {
-                Venue v = new Venue(items.getString(8),
-                        new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
-                v.location.dateAdded = items.getString(2);
-                v.categories = items.getString(10);
-                ace.add(v);
+                if (items.getInt(7) == 1) {
+                    Venue v = new Venue(items.getString(8),
+                            new PlaceLocation(items.getDouble(5), items.getDouble(6), true));
+                    v.location.dateAdded = items.getString(2);
+                    v.categories = items.getString(10);
+                    ace.add(v);
+                }
             } while (items.moveToNext());
         }
 
@@ -272,8 +298,6 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
         }
 
         priority.addAll(tp);
-
-
 
         groupListPurpose.add(priority.get(0));
         childMapPurpose.put(priority.get(0), priority);

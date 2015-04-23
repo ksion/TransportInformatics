@@ -21,13 +21,14 @@
         android:layout_centerHorizontal="true"
         >
 
-        <TextView
-            android:layout_width="320dp"
-            android:layout_height="40dp"
-            android:text="Today's Date"
+        <TextClock
             android:id="@+id/datetime_display"
+            android:format12Hour="hh:mm a, MMMM d, yyyy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textSize="21sp"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp" />
 
 
         <LinearLayout
@@ -106,7 +107,8 @@
                 android:background="#f05e69"
                 android:textColor="#ffffff"
                 android:text="confirm"
-                android:id="@+id/button_confirm" />
+                android:id="@+id/button_confirm"
+                android:onClick="confirm"/>
             <Button
                 android:layout_width="140dp"
                 android:layout_height="60dp"
@@ -114,7 +116,8 @@
                 android:text="SKIP"
                 android:textColor="#ffffff"
                 android:id="@+id/buttonskip"
-                android:layout_marginLeft="40dp"/>
+                android:layout_marginLeft="40dp"
+                android:onClick="skip"/>
         </LinearLayout>
 
     </LinearLayout>
