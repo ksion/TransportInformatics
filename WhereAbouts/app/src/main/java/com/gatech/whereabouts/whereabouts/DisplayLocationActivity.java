@@ -197,18 +197,18 @@ public class DisplayLocationActivity extends ActionBarActivity implements
                 if (items.getInt(8) == 1) {
                     double lat = items.getDouble(5);
                     double lng = items.getDouble(6);
+//
+//                    double euclideanDist = Math.sqrt(
+//                            Math.pow(location.getLatitude() - lat, 2) +
+//                                    Math.pow(location.getLongitude() - lng, 2));
+//
+//                    if (euclideanDist < 0.9) {
+                    Venue v = new Venue(items.getString(8),
+                            new PlaceLocation(lat, lng, true));
+                    v.location.dateAdded = items.getString(2);
+                    v.categories = items.getString(10);
+                    ace.add(v);
 
-                    double euclideanDist = Math.sqrt(
-                            Math.pow(location.getLatitude() - lat, 2) +
-                                    Math.pow(location.getLongitude() - lng, 2));
-
-                    if (euclideanDist < 0.9) {
-                        Venue v = new Venue(items.getString(8),
-                                new PlaceLocation(lat, lng, true));
-                        v.location.dateAdded = items.getString(2);
-                        v.categories = items.getString(10);
-                        ace.add(v);
-                    }
                 }
             } while (items.moveToNext());
         }
@@ -245,7 +245,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             }
         }
 
-        if (priority.size() > 6) { priority.subList(0, 6); }
+//        if (priority.size() > 6) { priority.subList(0, 6); }
 
         return priority;
     }
@@ -273,6 +273,7 @@ public class DisplayLocationActivity extends ActionBarActivity implements
             if (foundTripPurpose.isEmpty() && priority.isEmpty()) {
                 tp.add(0, "Select your trip purpose");
             } else {
+                priority.addAll(foundTripPurpose);
                 for (String x : foundTripPurpose) {
                     tp.remove(x);
                 }
