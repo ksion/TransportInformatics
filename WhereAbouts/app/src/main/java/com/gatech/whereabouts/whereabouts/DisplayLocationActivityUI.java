@@ -200,6 +200,7 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
 //            final Spinner locationSpinner = (Spinner) findViewById(R.id.locationreal);
 
             locations = prioritizeLocations(location, mostRecentVenues(), fourSquareLocations);
+
             prepareListData();
 
             locationListView = (ExpandableListView) findViewById(R.id.placelist);
@@ -403,21 +404,8 @@ public class DisplayLocationActivityUI extends ActionBarActivity implements
 //    List<String> groupListPurpose;
 //    HashMap<String, List<String>> childMapPurpose;
 private void prepareListData() {
-    groupListLocation = new ArrayList<Venue>();
-    childMapLocation = new HashMap<Venue, List<Venue>>();
-
-    // Adding child data
-//    groupListLocation.add("Top 250");
-
-    // Adding child data
-//    List<String> top250 = new ArrayList<String>();
-//    top250.add("The Shawshank Redemption");
-//    top250.add("The Godfather");
-//    top250.add("The Godfather: Part II");
-//    top250.add("Pulp Fiction");
-//    top250.add("The Good, the Bad and the Ugly");
-//    top250.add("The Dark Knight");
-//    top250.add("12 Angry Men");
+    groupListLocation = new ArrayList<>();
+    childMapLocation = new HashMap<>();
 
 
     groupListLocation.add(locations.get(0));
